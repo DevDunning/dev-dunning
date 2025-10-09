@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>$DD — DevDunning Community</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <img src="DD.png" alt="DevDunning Avatar" class="avatar">
+      <h1>$DD Community Portal</h1>
+    </div>
+    <nav>
+      <a href="#vote">Vote</a>
+      <a href="#updates">Updates</a>
+      <a href="#links">Links</a>
+    </nav>
+    <button id="admin-login" class="admin-btn">🔐 Admin Login</button>
+  </header>
+
+  <main>
+    
+    <!-- VOTE SECTION -->
+   <section class="card fade-in">
+  <h2 id="voting-title">Community Poll</h2>
+  <div id="poll"></div>
+</section>
+
+<!-- Hidden admin panel for voting -->
+<section id="voting-admin-controls" class="card hidden">
+  <h3>🛠 Edit Poll</h3>
+  <input type="text" id="new-question" placeholder="New question" />
+  <textarea id="new-options" placeholder="Enter options separated by commas"></textarea>
+  <button id="update-vote-btn">Update Poll</button>
+</section>
+
+    <!-- UPDATES SECTION -->
+    <section id="updates">
+      <h2 class="glow text-center">📢 Latest Updates</h2>
+      <div id="update-container">
+        <!-- Each update is now its own card -->
+        <div class="card update-card fade-in">
+          <p><strong>🚀 $DD website alive!</strong></p>
+        </div>
+
+        <div class="card update-card fade-in">
+          <p><strong>💬 Telegram community growing strong.</strong></p>
+        </div>
+      </div>
+
+      <!-- Admin Controls (hidden by default) -->
+      <div id="admin-section">
+        <div id="admin-controls" class="hidden">
+          <button id="open-modal">➕ New Update</button>
+          <button id="logout">Log Out</button>
+        </div>
+      </div>
+
+      <!-- Modal for Adding Updates -->
+      <div id="update-modal" class="modal hidden">
+        <div class="modal-content">
+          <h3>📝 Post a New Update</h3>
+          <textarea id="new-update" placeholder="Type your new update here..."></textarea>
+          <div class="modal-buttons">
+            <button id="post-update">Post</button>
+            <button id="close-modal" class="btn-secondary">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LINKS SECTION -->
+    <section id="links" class="card fade-in">
+      <h2>🌐 Connect with Us</h2>
+      <div class="social-links">
+        <a href="https://x.com/DevDunning" target="_blank" class="social-card twitter">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="X (Twitter)">
+          <span>@DevDunning</span>
+        </a>
+
+        <a href="https://t.me/+tUZtN13fmsA2M2I0" target="_blank" class="social-card telegram">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/telegram.svg" alt="Telegram">
+          <span>Join the Chat</span>
+        </a>
+
+        <div class="social-card coming-soon">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/solana.svg" alt="Pump.fun">
+          <span>Pump.fun — Coming Soon</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 DevDunning ($DD). All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
