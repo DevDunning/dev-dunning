@@ -1,164 +1,227 @@
 // ============================
+// FIREBASE SETUP
+// ============================
+const firebaseConfig = {
+  apiKey: "AIzaSyBVDOstjavCFnS7hGviN4wGOjBo1bHZ4H0",
+  authDomain: "dev-dunning.firebaseapp.com",
+  databaseURL: "https://dev-dunning-default-rtdb.firebaseio.com",
+  projectId: "dev-dunning",
+  storageBucket: "dev-dunning.firebasestorage.app",
+  messagingSenderId: "159207306253",
+  appId: "1:159207306253:web:3668f18c8008a22620d144",
+  measurementId: "G-R2WZ908M50"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ============================
 // ADMIN CONTROL
 // ============================
-const ADMIN_PASSWORD = "Diesel!"; // <--- change this anytime
+const ADMIN_PASSWORD = "Diesel!";
 let isAdmin = false;
 
-const loginBtn = document.getElementById("admin-login");
-const adminControls = document.getElementById("admin-controls");
-const logoutBtn = document.getElementById("logout");
-const votingAdminControls = document.getElementById("voting-admin-controls");
+const loginBtn = document.getElementById('admin-login');
+const logoutBtn = document.getElementById('logout');
+const openModalBtn = document.getElementById('open-modal');
+const adminModal = document.getElementById('update-modal');
+const closeModalBtn = document.getElementById('close-modal');
+const postUpdateBtn = document.getElementById('post-update');
+const newUpdate = document.getElementById('new-update');
 
-// Handle admin login
-loginBtn.addEventListener("click", () => {
-  const pass = prompt("Enter admin password:");
+// Poll inputs (we’ll dynamically create these in modal)
+let pollQuestionInput = null;
+let pollOptionsInput = null;
+
+// LOGIN
+loginBtn.addEventListener('click', () => {
+  const pass = prompt("Enter Admin Password:");
   if (pass === ADMIN_PASSWORD) {
     isAdmin = true;
-    adminControls.classList.remove("hidden");
-    votingAdminControls?.classList.remove("hidden");
-    loginBtn.classList.add("hidden");
-    alert("Admin logged in!");
+    alert("✅ Admin mode activated");
+    loginBtn.classList.add('hidden');
+    document.getElementById('admin-controls').classList.remove('hidden');
   } else {
-    alert("Incorrect password!");
+    alert("❌ Wrong password");
   }
 });
 
-// Handle admin logout
-logoutBtn.addEventListener("click", () => {
+// LOGOUT
+logoutBtn.addEventListener('click', () => {
   isAdmin = false;
-  adminControls.classList.add("hidden");
-  votingAdminControls?.classList.add("hidden");
-  loginBtn.classList.remove("hidden");
-  alert("Logged out.");
+  alert("👋 Logged out");
+  loginBtn.classList.remove('hidden');
+  document.getElementById('admin-controls').classList.add('hidden');
 });
 
-// ============================
-// UPDATES SYSTEM
-// ============================
-const updateList = document.getElementById("update-list");
-const newUpdate = document.getElementById("new-update");
-const postBtn = document.getElementById("post-update");
-let updates = JSON.parse(localStorage.getItem("updates")) || [];
+// OPEN/CLOSE MODAL
+openModalBtn.addEventListener('click', () => {
+  if (!isAdmin) return alert("Admin only");
+  adminModal.classList.remove('hidden');
+});
+closeModalBtn.addEventListener('click', () => adminModal.classList.add('hidden'));
 
-function renderUpdates() {
-  if (!updateList) return;
-  updateList.innerHTML = updates.map(u => `<li>${u}</li>`).join("");
+// ============================
+// UPDATES SYSTEM (LIVE)
+// ============================
+const updateList = document.getElementById('update-list');
+const updatesRef = db.ref('updates');
+
+updatesRef.on('value', snapshot => {
+  const data = snapshot.val();
+  const updates = data ? Object.entries(data)
+      .sort((a, b) => b[0] - a[0])
+      .map(e => e[1]) : [];
+  renderUpdates(updates);
+});
+
+function renderUpdates(updates) {
+  updateList.innerHTML = updates.map(u => `<li>${u}</li>`).join('');
 }
 
-postBtn?.addEventListener("click", () => {
-  if (!isAdmin) {
-    alert("Admin only. Please log in.");
-    return;
-  }
-
+// Post new update
+postUpdateBtn.addEventListener('click', async () => {
+  if (!isAdmin) return alert("Admin only");
   const text = newUpdate.value.trim();
-  if (!text) return alert("Please enter an update before posting.");
+  if (!text) return alert("Enter an update");
 
-  updates.unshift(`🕒 ${new Date().toLocaleString()} — ${text}`);
-  localStorage.setItem("updates", JSON.stringify(updates));
-  newUpdate.value = "";
-  renderUpdates();
+  const key = Date.now().toString();
+  const entry = `🕒 ${new Date().toLocaleString()} — ${text}`;
+  await db.ref('updates/' + key).set(entry);
+  newUpdate.value = '';
+  adminModal.classList.add('hidden');
 });
 
-renderUpdates();
-
 // ============================
-// VOTING SYSTEM (Live + Persistent)
+// POLL SYSTEM
 // ============================
-
-// Load saved voting data or default
-let votingData = JSON.parse(localStorage.getItem("votingData")) || {
+const pollRef = db.ref('polls/main');
+let votingData = {
   question: "What should we build next?",
   options: ["New dashboard", "Token tracker"],
   votes: {}
 };
 
-// Ensure votes object matches options
-votingData.options.forEach(opt => {
-  if (!votingData.votes[opt]) votingData.votes[opt] = 0;
+pollRef.on('value', snapshot => {
+  const data = snapshot.val();
+  if (data) votingData = data;
+  renderVoting();
 });
 
+function hasVoted() {
+  return localStorage.getItem('voted_main') === 'true';
+}
+
+async function vote(option) {
+  if (hasVoted()) return alert("You already voted");
+  votingData.votes[option] = (votingData.votes[option] || 0) + 1;
+  await pollRef.set(votingData);
+  localStorage.setItem('voted_main', 'true');
+  renderVoting();
+}
+
+// Render poll
 function renderVoting() {
-  const titleEl = document.getElementById("voting-title");
-  const pollContainer = document.getElementById("poll");
-  if (!titleEl || !pollContainer) return;
+  const pollContainer = document.getElementById('poll');
+  const titleEl = document.getElementById('voting-title');
+  if (!pollContainer || !titleEl) return;
 
   titleEl.textContent = "🗳 " + votingData.question;
   pollContainer.innerHTML = "";
 
-  const totalVotes = Object.values(votingData.votes).reduce((a, b) => a + b, 0) || 1;
+  const totalVotes = Object.values(votingData.votes || {}).reduce((a,b)=>a+b,0)||1;
 
   votingData.options.forEach(opt => {
     const count = votingData.votes[opt] || 0;
     const percent = ((count / totalVotes) * 100).toFixed(1);
 
-    const btn = document.createElement("button");
+    const btn = document.createElement('button');
     btn.textContent = `${opt} — ${count} votes (${percent}%)`;
-    btn.className = "vote-btn";
-    btn.addEventListener("click", () => {
-      votingData.votes[opt]++;
-      localStorage.setItem("votingData", JSON.stringify(votingData));
-      renderVoting();
-    });
+    btn.className = 'vote-btn';
+    btn.disabled = hasVoted();
+    btn.addEventListener('click', () => vote(opt));
 
-    // Visual bar to show percentage
-    const bar = document.createElement("div");
-    bar.style.height = "6px";
-    bar.style.width = percent + "%";
-    bar.style.background = "linear-gradient(90deg, var(--accent), var(--primary))";
-    bar.style.marginTop = "4px";
-    bar.style.borderRadius = "3px";
+    const bar = document.createElement('div');
+    bar.style.width = percent + '%';
+    bar.style.height = '6px';
+    bar.style.background = 'linear-gradient(90deg,var(--accent),var(--primary))';
+    bar.style.marginTop = '4px';
+    bar.style.borderRadius = '3px';
 
-    const wrapper = document.createElement("div");
+    const wrapper = document.createElement('div');
     wrapper.appendChild(btn);
     wrapper.appendChild(bar);
     pollContainer.appendChild(wrapper);
   });
 }
 
-renderVoting();
+// ============================
+// ADMIN POLL UPDATE (DYNAMIC IN MODAL)
+// ============================
+function createPollInputs() {
+  if (pollQuestionInput) return; // already exists
+  const container = document.createElement('div');
+  container.style.marginTop = '10px';
 
-// Admin adds new voting question and options dynamically
-document.getElementById("update-vote-btn")?.addEventListener("click", () => {
-  if (!isAdmin) {
-    alert("Admin only. Please log in.");
-    return;
-  }
+  const label1 = document.createElement('label');
+  label1.textContent = "Poll Question:";
+  pollQuestionInput = document.createElement('input');
+  pollQuestionInput.type = "text";
+  pollQuestionInput.value = votingData.question;
+  pollQuestionInput.style.width = "100%";
 
-  const newQuestion = document.getElementById("new-question").value.trim();
-  const optionsText = document.getElementById("new-options").value.trim();
+  const label2 = document.createElement('label');
+  label2.textContent = "Poll Options (comma separated):";
+  pollOptionsInput = document.createElement('textarea');
+  pollOptionsInput.value = votingData.options.join(", ");
+  pollOptionsInput.style.width = "100%";
 
-  if (!newQuestion || !optionsText) {
-    alert("Please enter a question and options (comma-separated).");
-    return;
-  }
+  const updatePollBtn = document.createElement('button');
+  updatePollBtn.textContent = "Update Poll";
+  updatePollBtn.style.marginTop = "5px";
+  updatePollBtn.addEventListener('click', async () => {
+    if (!isAdmin) return alert("Admin only");
+    const question = pollQuestionInput.value.trim();
+    const options = pollOptionsInput.value.split(',').map(o=>o.trim()).filter(Boolean);
+    if (!question || options.length === 0) return alert("Enter question and options");
+    votingData = { question, options, votes: {} };
+    options.forEach(o => votingData.votes[o] = 0);
+    await pollRef.set(votingData);
+    renderVoting();
+    alert("✅ Poll updated!");
+  });
 
-  const options = optionsText.split(",").map(o => o.trim()).filter(Boolean);
+  container.appendChild(label1);
+  container.appendChild(pollQuestionInput);
+  container.appendChild(label2);
+  container.appendChild(pollOptionsInput);
+  container.appendChild(updatePollBtn);
 
-  votingData = {
-    question: newQuestion,
-    options,
-    votes: {}
-  };
-  options.forEach(opt => votingData.votes[opt] = 0);
-
-  localStorage.setItem("votingData", JSON.stringify(votingData));
-  renderVoting();
-
-  document.getElementById("new-question").value = "";
-  document.getElementById("new-options").value = "";
-  alert("Voting updated!");
-});
+  adminModal.querySelector('.modal-content').appendChild(container);
+}
+createPollInputs();
 
 // ============================
-// SCROLL FADE-IN EFFECT
+// ROADMAP (VISIBLE TO ALL)
 // ============================
-const faders = document.querySelectorAll(".fade-in");
+const roadmapList = document.getElementById('roadmap-list');
+const mockRoadmap = [
+  { phase: "Phase 1", detail: "Launch $DD token & website" },
+  { phase: "Phase 2", detail: "Enable live polls & community updates" },
+  { phase: "Phase 3", detail: "Integrate tools and analytics" }
+];
+function renderRoadmap(items) {
+  if (!roadmapList) return;
+  roadmapList.innerHTML = items.map(r => `<li><strong>${r.phase}</strong>: ${r.detail}</li>`).join('');
+}
+renderRoadmap(mockRoadmap);
+
+// ============================
+// FADE-IN EFFECT
+// ============================
+const faders = document.querySelectorAll('.fade-in');
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("visible");
-    }
+    if (entry.isIntersecting) entry.target.classList.add('visible');
   });
 });
 faders.forEach(fader => observer.observe(fader));

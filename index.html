@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>$DD — DevDunning Community</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
     <div class="header-content">
-      <img src="DD.png" alt="DevDunning Avatar" class="avatar">
+      <img src="DD.png" alt="DevDunning Avatar" class="avatar" />
       <h1>$DD Community Portal</h1>
     </div>
     <nav>
@@ -21,44 +21,30 @@
   </header>
 
   <main>
-    
     <!-- VOTE SECTION -->
-   <section class="card fade-in">
-  <h2 id="voting-title">Community Poll</h2>
-  <div id="poll"></div>
-</section>
+    <section class="card fade-in" id="vote">
+      <h2 id="voting-title">Community Poll</h2>
+      <div id="poll"></div>
+    </section>
 
-<!-- Hidden admin panel for voting -->
-<section id="voting-admin-controls" class="card hidden">
-  <h3>🛠 Edit Poll</h3>
-  <input type="text" id="new-question" placeholder="New question" />
-  <textarea id="new-options" placeholder="Enter options separated by commas"></textarea>
-  <button id="update-vote-btn">Update Poll</button>
-</section>
+    <!-- ROADMAP SECTION (Visible to all) -->
+    <section class="card fade-in" id="roadmap">
+      <h2>DevDunning Roadmap</h2>
+      <ul id="roadmap-list"></ul>
+    </section>
 
     <!-- UPDATES SECTION -->
     <section id="updates">
       <h2 class="glow text-center">📢 Latest Updates</h2>
-      <div id="update-container">
-        <!-- Each update is now its own card -->
-        <div class="card update-card fade-in">
-          <p><strong>🚀 $DD website alive!</strong></p>
-        </div>
+      <ul id="update-list" class="card fade-in"></ul>
 
-        <div class="card update-card fade-in">
-          <p><strong>💬 Telegram community growing strong.</strong></p>
-        </div>
+      <!-- Admin Controls -->
+      <div id="admin-controls" class="hidden">
+        <button id="open-modal">➕ New Update</button>
+        <button id="logout">Log Out</button>
       </div>
 
-      <!-- Admin Controls (hidden by default) -->
-      <div id="admin-section">
-        <div id="admin-controls" class="hidden">
-          <button id="open-modal">➕ New Update</button>
-          <button id="logout">Log Out</button>
-        </div>
-      </div>
-
-      <!-- Modal for Adding Updates -->
+      <!-- Admin Modal -->
       <div id="update-modal" class="modal hidden">
         <div class="modal-content">
           <h3>📝 Post a New Update</h3>
@@ -76,17 +62,15 @@
       <h2>🌐 Connect with Us</h2>
       <div class="social-links">
         <a href="https://x.com/DevDunning" target="_blank" class="social-card twitter">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="X (Twitter)">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="X (Twitter)" />
           <span>@DevDunning</span>
         </a>
-
         <a href="https://t.me/+tUZtN13fmsA2M2I0" target="_blank" class="social-card telegram">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/telegram.svg" alt="Telegram">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/telegram.svg" alt="Telegram" />
           <span>Join the Chat</span>
         </a>
-
         <div class="social-card coming-soon">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/solana.svg" alt="Pump.fun">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/solana.svg" alt="Pump.fun" />
           <span>Pump.fun — Coming Soon</span>
         </div>
       </div>
@@ -97,6 +81,11 @@
     <p>© 2025 DevDunning ($DD). All rights reserved.</p>
   </footer>
 
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <!-- App JS -->
   <script src="script.js"></script>
 </body>
 </html>
