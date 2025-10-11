@@ -1,15 +1,12 @@
--- sql/seed.sql
+INSERT INTO poll_options (text, votes) VALUES ('Yes', 0), ('No', 0), ('Maybe', 0);
 
--- Insert default poll choices
-INSERT INTO poll_choices (choice_text) VALUES
-('Yes'), ('No'), ('Maybe');
+INSERT INTO news (title, body, link) VALUES 
+('Launch Announcement', '$DD token launched on Pump.fun!', 'https://pump.fun'),
+('Update 1', 'New features added.', null);
 
--- Insert default roadmap phases
-INSERT INTO roadmap_phases (title, description, progress) VALUES
-('Phase 1: Concept & Planning', 'Define project goals and roadmap.', 100),
-('Phase 2: Development & Testing', 'Develop smart contracts and testnet launch.', 50),
-('Phase 3: Mainnet Launch & Marketing', 'Official launch and marketing campaigns.', 10);
+INSERT INTO roadmap_phases (phase_name, milestones, progress, completed) VALUES 
+('Phase 1: Launch', 'Token creation\nInitial marketing', 100, true),
+('Phase 2: Growth', 'Partnerships\nExchange listing', 50, false),
+('Phase 3: Expansion', 'DAO setup\nUtility additions', 0, false);
 
--- Insert initial token cache row
-INSERT INTO token_cache (id, price, market_cap, total_supply, holders, trades) VALUES
-(1, '$0', '$0', '0', 0, 0);
+INSERT INTO token_cache (id, data) VALUES (1, '{}') ON CONFLICT (id) DO NOTHING;

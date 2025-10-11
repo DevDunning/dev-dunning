@@ -1,20 +1,4 @@
 [
-  {
-    "id": 1,
-    "title": "Phase 1: Concept & Planning",
-    "description": "Define project goals and roadmap.",
-    "progress": 100
-  },
-  {
-    "id": 2,
-    "title": "Phase 2: Development & Testing",
-    "description": "Develop smart contracts and testnet launch.",
-    "progress": 50
-  },
-  {
-    "id": 3,
-    "title": "Phase 3: Mainnet Launch & Marketing",
-    "description": "Official launch and marketing campaigns.",
-    "progress": 10
-  }
+  {"phase_name": "Phase 1", "milestones": "Launch", "progress": 100, "completed": true},
+  {"phase_name": "Phase 2", "milestones": "Growth", "progress": 0, "completed": false}
 ]

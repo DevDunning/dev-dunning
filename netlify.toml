@@ -1,8 +1,8 @@
-[build]
-  functions = "netlify/functions"
-  publish = "public"
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
 
-[dev]
-  functions = "netlify/functions"
-
-  
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

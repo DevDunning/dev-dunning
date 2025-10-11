@@ -1,25 +1,11 @@
-// netlify/functions/auth-login.js
-export const config = { runtime: "nodejs18.x" };
-
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-exports.handler = async function(event, context) {
-    if (event.httpMethod !== 'POST') {
-        return { statusCode: 405, body: 'Method Not Allowed' };
-    }
-    const { password } = JSON.parse(event.body);
-    const adminHash = process.env.ADMIN_PASSWORD_HASH;
-    if (!password || !adminHash) {
-        return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request' }) };
-    }
-    if (!bcrypt.compareSync(password, adminHash)) {
-        return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorized' }) };
-    }
-    // Create JWT
-    const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    return {
-        statusCode: 200,
-        body: JSON.stringify({ token })
-    };
+exports.handler = async (event) => {
+  const { password } = JSON.parse(event.body);
+  if (!bcrypt.compareSync(password, process.env.ADMIN_PASSWORD_HASH)) {
+    return { statusCode: 401, body: 'Invalid password' };
+  }
+  const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  return { statusCode: 200, body: JSON.stringify({ token }) };
 };
