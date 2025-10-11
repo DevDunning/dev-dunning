@@ -225,14 +225,45 @@ section h2 {
 }
 
 /* Links section */
+#links {
+  text-align: center;
+  margin: 40px auto;
+  padding: 20px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #000000, #1a1a1a);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.25);
+}
+
+#links h2 {
+  color: gold;
+  font-size: 1.8em;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
 #links ul {
-    list-style: none;
-    padding: 0;
-    text-align: center;
+  list-style: none;
+  padding: 0;
 }
+
 #links li {
-    margin: 0.5rem 0;
+  margin: 10px 0;
 }
+
+#links a {
+  color: gold;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.2em;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+#links a:hover {
+  color: white;
+  text-shadow: 0 0 10px gold;
+}
+
 
 /* Admin section */
 #admin {
