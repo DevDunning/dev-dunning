@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevDunning Token (Pump.fun)</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <!-- Replace 'logo.png' with actual logo file -->
+                <img src="logo.png" alt="DevDunning Logo" id="logo">
+            </div>
+            <div class="nav-links">
+                <a href="#intro">Intro</a>
+                <a href="#token">Token</a>
+                <a href="#poll">Poll</a>
+                <a href="#news">News</a>
+                <a href="#roadmap">Roadmap</a>
+                <a href="#links">Links</a>
+                <a href="#about">About</a>
+                <a href="#admin" id="admin-link" style="display:none;">Admin</a>
+            </div>
+            <button id="dark-mode-toggle" class="dark-mode-toggle">🌙</button>
+            <button class="hamburger" id="hamburger">
+                &#9776;
+            </button>
+        </div>
+    </nav>
+
+    <section id="intro">
+        <canvas id="particle-canvas"></canvas>
+        <div class="intro-content">
+            <h1>Welcome to DevDunning Token</h1>
+            <div class="stats">
+                <div class="stat">
+                    <h3>Price</h3>
+                    <div id="stat-price" class="stat-value">--</div>
+                </div>
+                <div class="stat">
+                    <h3>Market Cap</h3>
+                    <div id="stat-market-cap" class="stat-value">--</div>
+                </div>
+                <div class="stat">
+                    <h3>Total Supply</h3>
+                    <div id="stat-supply" class="stat-value">--</div>
+                </div>
+                <div class="stat">
+                    <h3>Holders</h3>
+                    <div id="stat-holders" class="stat-value">--</div>
+                </div>
+                <div class="stat">
+                    <h3>Trades</h3>
+                    <div id="stat-trades" class="stat-value">--</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="token">
+        <h2>Token Information</h2>
+        <div id="token-info">
+            <!-- Token details from APIs will be displayed here -->
+        </div>
+    </section>
+
+    <section id="poll">
+        <h2>Poll</h2>
+        <div id="poll-container">
+            <!-- Poll question and answers or results will be loaded here -->
+        </div>
+        <div id="poll-vote-count">Total votes: <span id="total-votes">0</span></div>
+    </section>
+
+    <section id="news">
+        <h2>Latest News</h2>
+        <button id="refresh-news">Refresh</button>
+        <div id="news-container">
+            <!-- News items will be loaded here -->
+        </div>
+    </section>
+
+    <section id="roadmap">
+        <h2>Roadmap</h2>
+        <div id="roadmap-container">
+            <!-- Roadmap phases will be loaded here -->
+        </div>
+    </section>
+
+    <section id="links">
+        <h2>Links</h2>
+        <ul>
+            <li><a href="https://t.me/DevDunningToken" target="_blank">Telegram</a></li>
+            <li><a href="https://twitter.com/DevDunningToken" target="_blank">Twitter</a></li>
+            <li><a href="https://t.me/joinchat/..." target="_blank">Community Chat</a></li>
+            <!-- Add other relevant links -->
+        </ul>
+    </section>
+
+    <section id="about">
+        <h2>About</h2>
+        <p>DevDunning is an innovative meme token on the Solana blockchain. (Add more details about the project here.)</p>
+    </section>
+
+    <section id="admin" style="display:none;">
+        <h2>Admin Panel</h2>
+        <div id="admin-login">
+            <h3>Login</h3>
+            <input type="password" id="admin-password" placeholder="Password">
+            <button id="admin-login-button">Login</button>
+            <div id="admin-login-error" class="error-message"></div>
+        </div>
+        <div id="admin-panel" style="display:none;">
+            <h3>Manage Poll Choices</h3>
+            <div id="admin-poll-choices">
+                <!-- Admin poll choices management -->
+            </div>
+            <h3>Manage News</h3>
+            <div id="admin-news">
+                <!-- Admin news management -->
+            </div>
+            <h3>Manage Roadmap</h3>
+            <div id="admin-roadmap">
+                <!-- Admin roadmap management -->
+            </div>
+            <button id="admin-logout-button">Logout</button>
+        </div>
+    </section>
+
+    <div id="offline-banner" style="display:none;">You are offline. Some features may be unavailable.</div>
+
+    <script src="sha256.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

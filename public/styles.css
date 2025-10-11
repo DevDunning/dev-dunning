@@ -1,0 +1,286 @@
+/* General styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    color: #333;
+}
+.dark-mode {
+    background-color: #121212;
+    color: #f4f4f4;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #ddd;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+.dark-mode .navbar {
+    background-color: #1e1e1e;
+    border-color: #333;
+}
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+}
+.navbar .logo img {
+    height: 40px;
+}
+.nav-links {
+    display: flex;
+    align-items: center;
+}
+.nav-links a {
+    margin: 0 0.5rem;
+    text-decoration: none;
+    color: inherit;
+    font-weight: bold;
+}
+.nav-links a:hover {
+    text-decoration: underline;
+}
+.dark-mode-toggle {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-left: 1rem;
+}
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Sections */
+section {
+    padding: 4rem 1rem;
+}
+section h2 {
+    margin-top: 0;
+    text-align: center;
+}
+
+/* Intro Section */
+#intro {
+    position: relative;
+    color: #ffffff;
+    text-align: center;
+    background-color: #333;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#particle-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.intro-content {
+    position: relative;
+    z-index: 1;
+}
+.stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1rem;
+}
+.stat {
+    margin: 0.5rem;
+    flex: 1 1 120px;
+}
+.stat h3 {
+    margin-bottom: 0.2rem;
+}
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Token section */
+#token {
+    background-color: #fafafa;
+}
+.dark-mode #token {
+    background-color: #181818;
+}
+#token-info {
+    max-width: 800px;
+    margin: auto;
+}
+
+/* Poll section */
+#poll {
+    background-color: #ffffff;
+}
+.dark-mode #poll {
+    background-color: #222;
+}
+#poll-container {
+    max-width: 600px;
+    margin: auto;
+}
+.poll-choice {
+    margin: 0.5rem 0;
+}
+.poll-choice button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+}
+.poll-result {
+    margin-top: 1rem;
+}
+.progress-bar {
+    background: #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 20px;
+}
+.progress-bar-inner {
+    background: #4caf50;
+    height: 100%;
+    width: 0;
+    transition: width 1s ease-in-out;
+}
+
+/* News section */
+#news {
+    background-color: #fafafa;
+}
+.dark-mode #news {
+    background-color: #181818;
+}
+#news-container {
+    max-width: 600px;
+    margin: auto;
+}
+.news-item {
+    border-bottom: 1px solid #ddd;
+    padding: 1rem 0;
+}
+.dark-mode .news-item {
+    border-color: #444;
+}
+.news-item h4 {
+    margin: 0;
+}
+.news-meta {
+    font-size: 0.9rem;
+    color: #666;
+}
+.news-link {
+    color: #0066cc;
+}
+.news-link:hover {
+    text-decoration: underline;
+}
+.error-message {
+    color: red;
+}
+
+/* Roadmap section */
+#roadmap {
+    background-color: #ffffff;
+}
+.dark-mode #roadmap {
+    background-color: #222;
+}
+.roadmap-phase {
+    border: 1px solid #ccc;
+    margin: 1rem auto;
+    max-width: 600px;
+    border-radius: 5px;
+}
+.dark-mode .roadmap-phase {
+    border-color: #444;
+}
+.roadmap-title {
+    background-color: #f0f0f0;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+.dark-mode .roadmap-title {
+    background-color: #333;
+}
+.roadmap-content {
+    padding: 0.5rem;
+    display: none;
+}
+.progress-text {
+    font-size: 0.9rem;
+}
+
+/* Links section */
+#links ul {
+    list-style: none;
+    padding: 0;
+    text-align: center;
+}
+#links li {
+    margin: 0.5rem 0;
+}
+
+/* Admin section */
+#admin {
+    background-color: #fafafa;
+}
+.dark-mode #admin {
+    background-color: #181818;
+}
+#admin-panel {
+    margin-top: 1rem;
+}
+#admin-panel h3 {
+    margin-bottom: 0.5rem;
+}
+#admin-panel input, #admin-panel textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+#admin-panel button {
+    margin-right: 0.5rem;
+}
+
+/* Offline banner */
+#offline-banner {
+    background-color: #ffcc00;
+    color: #000;
+    text-align: center;
+    padding: 0.5rem;
+}
+.dark-mode #offline-banner {
+    background-color: #ffcc00;
+    color: #000;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .nav-links {
+        display: none;
+        flex-direction: column;
+    }
+    .nav-links.active {
+        display: flex;
+    }
+    .hamburger {
+        display: block;
+    }
+    .stats {
+        flex-direction: column;
+    }
+}
