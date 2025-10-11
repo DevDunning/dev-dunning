@@ -1,4 +1,6 @@
 // netlify/functions/token.js
+export const config = { runtime: "nodejs18.x" };
+
 const fetch = require('node-fetch');
 const { createClient } = require('@supabase/supabase-js');
 

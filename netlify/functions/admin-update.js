@@ -1,4 +1,6 @@
 // netlify/functions/admin-update.js
+export const config = { runtime: "nodejs18.x" };
+
 const { createClient } = require('@supabase/supabase-js');
 const jwt = require('jsonwebtoken');
 const sanitizeHtml = require('sanitize-html');

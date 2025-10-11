@@ -1,4 +1,6 @@
 // netlify/functions/roadmap-get.js
+export const config = { runtime: "nodejs18.x" };
+
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 

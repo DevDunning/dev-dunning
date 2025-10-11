@@ -1,4 +1,6 @@
 // netlify/functions/auth-login.js
+export const config = { runtime: "nodejs18.x" };
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
