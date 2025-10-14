@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>$DD Community</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <h1 class="site-title">DevDunning</h1>
+    <img src="DD.png" alt="$DD Logo" class="logo" />
+    <button id="theme-toggle" class="theme-toggle">🌙</button>
+  </header>
+
+  <main>
+    <!-- TOKEN INFO -->
+    <section id="token" class="card">
+      <h2>$DD Token Info</h2>
+      <div class="token-meta">
+        <div><strong>Blockchain:</strong> Solana</div>
+        <div><strong>Supply:</strong> 1,000,000,000</div>
+        <div><strong>Launch:</strong> Fair Launch on Pump.fun</div>
+      </div>
+    </section>
+
+    <!-- NEWS + POLL -->
+    <div class="content-grid">
+      <section id="news" class="card">
+        <h2>Recent News</h2>
+        <p class="small-muted">October 2025</p>
+        <p>🚀 $DD officially launched on <a href="https://pump.fun/profile/B2DwSouVbLVKadzgSvS4yGWQMamtgMPUGQJyhKKGaDR6" target="_blank">Pump.fun</a>!</p>
+        <p>🔥 Community website v1 released. More updates coming soon!</p>
+        <p>👥 Join our Telegram to be part of early governance.</p>
+      </section>
+
+      <!-- POLL -->
+      <section id="poll" class="card">
+        <h2>Community Poll</h2>
+        <form id="voteForm">
+          <p>What should we prioritize next?</p>
+          <label><input type="radio" name="vote" value="marketing"> Marketing Push</label><br>
+          <label><input type="radio" name="vote" value="Buybacks"> Utility Development</label><br>
+          <label><input type="radio" name="vote" value="V2 Website"> V2 Website</label><br>
+          <label><input type="radio" name="vote" value="Games"> Games</label><br><br>
+          <button type="submit">Vote</button>
+        </form>
+
+        <div class="results" id="results"></div>
+      </section>
+    </div>
+
+    <!-- SOCIALS  add sec-->
+    <section id="socials" class="socials">
+      <div class="social-link">
+        <a href="https://x.com/DevDunning" target="_blank" rel="noopener noreferrer">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" class="icon" alt="X" />
+        </a>
+        <span>@DevDunning</span>
+      </div>
+
+      <div class="social-link">
+        <a href="https://t.me/+tUZtN13fmsA2M2I0" target="_blank" rel="noopener noreferrer">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/telegram.svg" class="icon" alt="Telegram" />
+        </a>
+        <span>Telegram</span>
+      </div>
+
+      <div class="social-link">
+        <a href="https://pump.fun/profile/B2DwSouVbLVKadzgSvS4yGWQMamtgMPUGQJyhKKGaDR6" target="_blank" rel="noopener noreferrer">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/solana.svg" class="icon" alt="Pump.fun" />
+        </a>
+        <span>Pump.fun</span>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 $DD Community — Built with passion by Dev Dunning</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,4 +1,0 @@
-[
-  {"phase_name": "Phase 1", "milestones": "Launch", "progress": 100, "completed": true},
-  {"phase_name": "Phase 2", "milestones": "Growth", "progress": 0, "completed": false}
-]
