@@ -263,15 +263,13 @@ body.dark-mode a:hover {
 
   /* Increase padding to clear fixed header comfortably */
   main {
-    padding-top: 200px; /* ensures content never hides behind header */
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-top: 60px; /* ensures content never hides behind header */
   }
 
   /* Optional: tighter header layout */
   header {
     gap: 0.4rem;
-    padding: 1rem 0.5rem;
+    padding: 1rem;
   }
 
   /* Make socials stack neatly */
