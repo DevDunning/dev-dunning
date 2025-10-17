@@ -1,78 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>$DD Community</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
-</head>
-<body>
-  <header>
-    <h1 class="site-title">DevDunning</h1>
-    <img src="DD.png" alt="$DD Logo" class="logo" />
-    <button id="theme-toggle" class="theme-toggle">🌙</button>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>$DD Community</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto+Slab:wght@700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- ===== HEADER ===== -->
+    <header>
+      <h1 class="site-title">$DD Community</h1>
+      <img src="DD.png" alt="$DD Logo" class="logo" />
+      <button id="theme-toggle" class="theme-toggle" title="Toggle Dark Mode">
+        🌙
+      </button>
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="whitepaper.html" class="nav-link">Whitepaper</a>
+      </nav>
+    </header>
 
-  <main>
-    <!-- TOKEN INFO -->
-    <section id="token" class="card">
-      <h2>$DD Token Info</h2>
-      <div class="token-meta">
-        <div><strong>Blockchain:</strong> Solana</div>
-        <div><strong>Supply:</strong> 1,000,000,000</div>
-        <div><strong>Launch:</strong> Fair Launch on Pump.fun</div>
-      </div>
-    </section>
-
-    <!-- NEWS + POLL -->
-    <div class="content-grid">
-      <section id="news" class="card">
-        <h2>Recent News</h2>
-        <p class="small-muted">October 2025</p>
-        <p>🚀 $DD officially launched on <a href="https://pump.fun/profile/B2DwSouVbLVKadzgSvS4yGWQMamtgMPUGQJyhKKGaDR6" target="_blank">Pump.fun</a>!</p>
-        <p>🔥 Community website v1 released. More updates coming soon!</p>
-        <p>👥 Join our Telegram to be part of early governance.</p>
+    <main>
+      <!-- TOKEN INFO -->
+      <section id="token" class="card">
+        <h2>$DD Token Info</h2>
+        <div class="token-meta">
+          <div><strong>CA:</strong> Soon!</div>
+          <div><strong>Blockchain:</strong> Solana</div>
+          <div><strong>Supply:</strong> 1,000,000,000</div>
+          <div><strong>Launch:</strong> Fair Launch on Pump.fun</div>
+        </div>
+        <p class="token-summary">
+          $DD was built to establish an ecosystem where we can share ideas and build together. We will be creating a custom token to launch on Raydium in 2026! welcome aboard and hold $DD to be eligible for future games, contests, giveaways, etc! Dont be late⏰ 
+        </p>
       </section>
 
-      <!-- POLL -->
-      <section id="poll" class="card">
-        <h2>Community Poll</h2>
-        <p>Coming Soon...</p>
+      <!-- GRID: POLL + NEWS -->
+      <div class="content-grid">
+        <section id="poll" class="card">
+          <h2>Community Poll</h2>
+          <p>Coming soon — you’ll be able to vote on upcoming decisions.</p>
+          <div id="results"></div>
+        </section>
 
-        <div class="results" id="results"></div>
+        <section id="news" class="card">
+          <h2>Recent News</h2>
+          <p class="small-muted">October 2025</p>
+          <p>
+            🚀 $DD officially launching on
+            <a
+              href="https://pump.fun/profile/B2DwSouVbLVKadzgSvS4yGWQMamtgMPUGQJyhKKGaDR6"
+              target="_blank"
+              >Pump.fun</a
+            >
+            Friday 12am UTC!
+          </p>
+          <p>🔥 v2 Community site is now live.</p>
+          <p>👥 Join our Telegram to be part of early governance.</p>
+          <p>👀 Voting takes place on X for now!</p>
+        </section>
+      </div>
+
+      <section id="roadmap" class="card">
+        <h2>Roadmap</h2>
+
+        <div class="roadmap-phase">
+          <h3>Phase 1 — Launch & Foundations</h3>
+          <p><strong>Goal:</strong> Establish Dev Dunning.</p>
+          <ul>
+            <li>Launch on Pump.fun</li>
+            <li>Deploy website</li>
+            <li>Begin live streams and content updates</li>
+            <li>Announce updates and next path</li>
+          </ul>
+        </div>
+
+        <div class="roadmap-phase">
+          <h3>Phase 2 — Growth & Momentum</h3>
+          <p><strong>Goal:</strong> Build community and engagement.</p>
+          <ul>
+            <li>Begin buybacks using reserves/rewards</li>
+            <li>Implement website voting system</li>
+            <li>Share stream schedule & maintain engagement</li>
+            <li>Host community gatherings & expand visibility</li>
+          </ul>
+        </div>
+
+        <div class="roadmap-phase">
+          <h3>Phase 3 — Long-Term Development</h3>
+          <p><strong>Goal:</strong> Transition toward $DD future.</p>
+          <ul>
+            <li>Distribute or burn from buyback wallet</li>
+            <li>Begin research & learning for $DD advancements</li>
+            <li>Gather community input for 2026 project</li>
+            <li>Strengthen internal systems & management</li>
+          </ul>
+        </div>
+
+        <div class="roadmap-phase">
+          <h3>Phase 4 — Project '26 Foundations</h3>
+          <p><strong>Goal:</strong> Build the next evolution.</p>
+          <ul>
+            <li>Establish Project '26 whitepaper, roadmap & tokenomics</li>
+            <li>Develop and launch beta UI</li>
+            <li>Finalize branding and apply for trademark</li>
+            <li>Expand research & development</li>
+          </ul>
+        </div>
+
+        <div class="roadmap-phase">
+          <h3>Phase 5 & Beyond — Sustainable Evolution</h3>
+          <p><strong>Goal:</strong> Grow into a thriving ecosystem.</p>
+          <ul>
+            <li>Develop Project '26 token</li>
+            <li>Possible $DD snapshot for airdrop</li>
+            <li>Continue R&D with the community</li>
+            <li>Share progress via $DD Stream</li>
+            <li>Strengthen the link between AI, education, and finance</li>
+          </ul>
+        </div>
       </section>
-    </div>
 
-    <!-- SOCIALS  add sec-->
-    <section id="socials" class="socials">
-      <div class="social-link">
-        <a href="https://x.com/DevDunning" target="_blank" rel="noopener noreferrer">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" class="icon" alt="X" />
-        </a>
-        <span>@DevDunning</span>
-      </div>
+      <!-- SOCIALS -->
+      <section id="socials" class="socials">
+        <div class="social-link">
+          <a
+            href="https://x.com/DevDunning"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg"
+              class="icon"
+              alt="X"
+            />
+          </a>
+          <span>@DevDunning</span>
+        </div>
 
-      <div class="social-link">
-        <a href="https://t.me/+tUZtN13fmsA2M2I0" target="_blank" rel="noopener noreferrer">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/telegram.svg" class="icon" alt="Telegram" />
-        </a>
-        <span>Telegram</span>
-      </div>
+        <div class="social-link">
+          <a
+            href="https://t.me/+tUZtN13fmsA2M2I0"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/telegram.svg"
+              class="icon"
+              alt="Telegram"
+            />
+          </a>
+          <span>Telegram</span>
+        </div>
 
-      <div class="social-link">
-        <a href="https://pump.fun/profile/B2DwSouVbLVKadzgSvS4yGWQMamtgMPUGQJyhKKGaDR6" target="_blank" rel="noopener noreferrer">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/solana.svg" class="icon" alt="Pump.fun" />
-        </a>
-        <span>Pump.fun</span>
-      </div>
-    </section>
-  </main>
+        <div class="social-link">
+          <a
+            href="https://pump.fun/profile/B2DwSouVbLVKadzgSvS4yGWQMamtgMPUGQJyhKKGaDR6"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/solana.svg"
+              class="icon"
+              alt="Pump.fun"
+            />
+          </a>
+          <span>Pump.fun</span>
+        </div>
+      </section>
+    </main>
 
-  <footer>
-    <p>© 2025 $DD Community — Built with passion by Dev Dunning</p>
-  </footer>
+    <footer>
+      <p>© 2025 $DD Community — Built with passion by Dev Dunning</p>
+    </footer>
 
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
