@@ -1,209 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>$DD Community</title>
-    <link rel="stylesheet" href="styles.css" />
-    <!-- Firebase App (core SDK) -->
-<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+document.addEventListener("DOMContentLoaded", () => {
+  // ============================
+  // THEME TOGGLE
+  // ============================
+  const toggle = document.getElementById("theme-toggle");
 
-<!-- Firestore -->
-<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
+  // Load saved theme preference
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark-mode");
+    toggle.textContent = "☀️";
+  } else {
+    toggle.textContent = "🌙";
+  }
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto+Slab:wght@700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <!-- ===== HEADER ===== -->
-    <header>
-      <h1 class="site-title">$DD Community</h1>
-      <img src="DD.png" alt="$DD Logo" class="logo" />
-      <button id="theme-toggle" class="theme-toggle" title="Toggle Dark Mode">
-        🌙
-      </button>
-      <nav class="nav-links">
-        <a href="index.html" class="nav-link active">Home</a>
-        <a href="whitepaper.html" class="nav-link">Whitepaper</a>
-      </nav>
-    </header>
+  // Toggle theme on click
+  toggle.addEventListener("click", () => {
+    const isDark = document.body.classList.toggle("dark-mode");
+    toggle.textContent = isDark ? "☀️" : "🌙";
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  });
 
-    <main>
-      <!-- TOKEN INFO -->
-      <section id="token" class="card">
-        <h2>$DD Token Info</h2>
-        <div class="token-meta">
-          <div><strong>CA: D8ofaTjkmJmrUjPSgMUVmqnuEKKanQD33FDnJwwDKhML</strong></div>
-          <div><strong>Blockchain:</strong> Solana</div>
-          <div><strong>Supply:</strong> 1,000,000,000</div>
-          <div><strong>Launch:</strong> Fair Launch on Pump.fun</div>
-        </div>
-        <p class="token-summary">
-          $DD was built to establish an ecosystem where we can share ideas and build together. We will be creating a custom token to launch on Raydium in 2026! welcome aboard and hold $DD to be eligible for future games, contests, giveaways, etc! Dont be late⏰ 
-        </p>
-      </section>
+  // ============================
+  // FIREBASE SETUP
+  // ============================
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-      <!-- GRID: POLL + NEWS -->
-      <section id="poll" class="card">
-  <h2>Community Poll</h2>
-  <p>Vote below — you only get one vote!</p>
+  // ============================
+  // DOM ELEMENTS
+  // ============================
+  const form = document.getElementById("poll-form");
+  const resultsDiv = document.getElementById("results");
+  const resultsDisplay = document.getElementById("results-display");
 
-  <form id="poll-form">
-    <div class="poll-option">
-      <input type="radio" id="option1" name="vote" value="option1" required>
-      <label for="option1">Option 1: Expand Marketing</label>
-    </div>
+  // ============================
+  // VOTE LIMIT (ONE PER USER)
+  // ============================
+  const userId =
+    localStorage.getItem("voterId") ||
+    (() => {
+      const id = Math.random().toString(36).substring(2);
+      localStorage.setItem("voterId", id);
+      return id;
+    })();
 
-    <div class="poll-option">
-      <input type="radio" id="option2" name="vote" value="option2">
-      <label for="option2">Option 2: Increase Burn Rate</label>
-    </div>
+  const voted = localStorage.getItem("hasVoted");
 
-    <div class="poll-option">
-      <input type="radio" id="option3" name="vote" value="option3">
-      <label for="option3">Option 3: Focus on AI Integration</label>
-    </div>
+  if (voted) {
+    form.style.display = "none";
+    resultsDiv.classList.remove("hidden");
+  }
 
-    <button type="submit" class="vote-btn">Submit Vote</button>
-  </form>
+  // ============================
+  // HANDLE VOTE SUBMISSION
+  // ============================
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const choice = form.vote.value;
+    if (!choice) return alert("Please select an option!");
 
-  <div id="results" class="hidden">
-    <h3>Current Results</h3>
-    <div id="results-display"></div>
-  </div>
-</section>
-        <section id="news" class="card">
-          <h2>Recent News</h2>
-          <p class="small-muted">October 2025</p>
-          <p>
-            🚀 $DD officially launched on
-            <a
-              href="https://pump.fun/profile/B2DwSouVbLVKadzgSvS4yGWQMamtgMPUGQJyhKKGaDR6"
-              target="_blank"
-              >Pump.fun</a
-            >
-          </p>
-          <p>🔥 v2 Community site is now live.</p>
-          <p>👥 Join our Telegram to be part of early governance.</p>
-          <p>👀 Voting takes place on X for now!</p>
-        </section>
-      </div>
+    try {
+      // Check if user already voted
+      const existingVote = await db
+        .collection("votes")
+        .where("userId", "==", userId)
+        .get();
 
-      <section id="roadmap" class="card">
-        <h2>Roadmap</h2>
+      if (!existingVote.empty) {
+        alert("You’ve already voted!");
+        return;
+      }
 
-        <div class="roadmap-phase">
-          <h3>Phase 1 — Launch & Foundations</h3>
-          <p><strong>Goal:</strong> Establish Dev Dunning.</p>
-          <ul>
-            <li>Launch on Pump.fun</li>
-            <li>Deploy website</li>
-            <li>Begin live streams and content updates</li>
-            <li>Announce updates and next path</li>
-          </ul>
-        </div>
+      await db.collection("votes").add({
+        userId,
+        choice,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
 
-        <div class="roadmap-phase">
-          <h3>Phase 2 — Growth & Momentum</h3>
-          <p><strong>Goal:</strong> Build community and engagement.</p>
-          <ul>
-            <li>Begin buybacks using reserves/rewards</li>
-            <li>Implement website voting system</li>
-            <li>Share stream schedule & maintain engagement</li>
-            <li>Host community gatherings & expand visibility</li>
-          </ul>
-        </div>
+      localStorage.setItem("hasVoted", "true");
+      form.style.display = "none";
+      resultsDiv.classList.remove("hidden");
+    } catch (err) {
+      console.error("Error saving vote:", err);
+      alert("Error saving vote, please try again.");
+    }
+  });
 
-        <div class="roadmap-phase">
-          <h3>Phase 3 — Long-Term Development</h3>
-          <p><strong>Goal:</strong> Transition toward $DD future.</p>
-          <ul>
-            <li>Distribute or burn from buyback wallet</li>
-            <li>Begin research & learning for $DD advancements</li>
-            <li>Gather community input for 2026 project</li>
-            <li>Strengthen internal systems & management</li>
-          </ul>
-        </div>
+  // ============================
+  // LIVE RESULTS
+  // ============================
+  db.collection("votes").onSnapshot((snapshot) => {
+    const counts = { option1: 0, option2: 0, option3: 0 };
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      if (counts[data.choice] !== undefined) counts[data.choice]++;
+    });
 
-        <div class="roadmap-phase">
-          <h3>Phase 4 — Project '26 Foundations</h3>
-          <p><strong>Goal:</strong> Build the next evolution.</p>
-          <ul>
-            <li>Establish Project '26 whitepaper, roadmap & tokenomics</li>
-            <li>Develop and launch beta UI</li>
-            <li>Finalize branding and apply for trademark</li>
-            <li>Expand research & development</li>
-          </ul>
-        </div>
-
-        <div class="roadmap-phase">
-          <h3>Phase 5 & Beyond — Sustainable Evolution</h3>
-          <p><strong>Goal:</strong> Grow into a thriving ecosystem.</p>
-          <ul>
-            <li>Develop Project '26 token</li>
-            <li>Possible $DD snapshot for airdrop</li>
-            <li>Continue R&D with the community</li>
-            <li>Share progress via $DD Stream</li>
-            <li>Strengthen the link between AI, education, and finance</li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- SOCIALS -->
-      <section id="socials" class="socials">
-        <div class="social-link">
-          <a
-            href="https://x.com/DevDunning"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg"
-              class="icon"
-              alt="X"
-            />
-          </a>
-          <span>@DevDunning</span>
-        </div>
-
-        <div class="social-link">
-          <a
-            href="https://t.me/+tUZtN13fmsA2M2I0"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/telegram.svg"
-              class="icon"
-              alt="Telegram"
-            />
-          </a>
-          <span>Telegram</span>
-        </div>
-
-        <div class="social-link">
-          <a
-            href="https://pump.fun/profile/B2DwSouVbLVKadzgSvS4yGWQMamtgMPUGQJyhKKGaDR6"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/solana.svg"
-              class="icon"
-              alt="Pump.fun"
-            />
-          </a>
-          <span>Pump.fun</span>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <p>© 2025 $DD Community — Built with passion by Dev Dunning</p>
-    </footer>
-
-    <script defer src="script.js"></script>
-  </body>
-</html>
+    resultsDisplay.innerHTML = `
+      <p><strong>Expand Marketing:</strong> ${counts.option1}</p>
+      <p><strong>Increase Burn Rate:</strong> ${counts.option2}</p>
+      <p><strong>Focus on AI Integration:</strong> ${counts.option3}</p>
+    `;
+  });
+});

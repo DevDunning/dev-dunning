@@ -24,67 +24,87 @@ document.addEventListener("DOMContentLoaded", () => {
   // FIREBASE SETUP
   // ============================
   const firebaseConfig = {
-  apiKey: "AIzaSyBs5KhK2wLU_lSiqg_rgw0HhzKW8VMVIHk",
-  authDomain: "dd-voting.firebaseapp.com",
-  projectId: "dd-voting",
-  storageBucket: "dd-voting.firebasestorage.app",
-  messagingSenderId: "476144697593",
-  appId: "1:476144697593:web:2bd45a5c554279e4046228"
-};
-
+    apiKey:  "AIzaSyBs5KhK2wLU_lSiqg_rgw0HhzKW8VMVIHk",
+    authDomain: "dd-voting.firebaseapp.com",
+    projectId: "dd-voting",
+  };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
   // ============================
-  // POLL LOGIC
+  // DOM ELEMENTS
   // ============================
   const form = document.getElementById("poll-form");
   const resultsDiv = document.getElementById("results");
   const resultsDisplay = document.getElementById("results-display");
 
-  // Track if user already voted
-  const hasVoted = localStorage.getItem("voted");
+  // ============================
+  // VOTE LIMIT (ONE PER USER)
+  // ============================
+  const userId =
+    localStorage.getItem("voterId") ||
+    (() => {
+      const id = Math.random().toString(36).substring(2);
+      localStorage.setItem("voterId", id);
+      return id;
+    })();
 
-  if (hasVoted) {
+  const voted = localStorage.getItem("hasVoted");
+
+  if (voted) {
     form.style.display = "none";
     resultsDiv.classList.remove("hidden");
   }
 
-  // Handle vote submission
+  // ============================
+  // HANDLE VOTE SUBMISSION
+  // ============================
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const choice = form.vote.value;
-
     if (!choice) return alert("Please select an option!");
 
     try {
-      await db.collection("votes").add({ choice });
-      localStorage.setItem("voted", "true");
+      // Check if user already voted
+      const existingVote = await db
+        .collection("votes")
+        .where("userId", "==", userId)
+        .get();
 
+      if (!existingVote.empty) {
+        alert("You’ve already voted!");
+        return;
+      }
+
+      await db.collection("votes").add({
+        userId,
+        choice,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+      localStorage.setItem("hasVoted", "true");
       form.style.display = "none";
       resultsDiv.classList.remove("hidden");
-    } catch (error) {
-      console.error("Error saving vote:", error);
+    } catch (err) {
+      console.error("Error saving vote:", err);
+      alert("Error saving vote, please try again.");
     }
   });
 
   // ============================
-  // LIVE RESULTS (auto-updating)
+  // LIVE RESULTS
   // ============================
   db.collection("votes").onSnapshot((snapshot) => {
     const counts = { option1: 0, option2: 0, option3: 0 };
-
     snapshot.forEach((doc) => {
       const data = doc.data();
-      if (counts[data.choice] !== undefined) {
-        counts[data.choice]++;
-      }
+      if (counts[data.choice] !== undefined) counts[data.choice]++;
     });
 
     resultsDisplay.innerHTML = `
       <p><strong>Expand Marketing:</strong> ${counts.option1}</p>
       <p><strong>Increase Burn Rate:</strong> ${counts.option2}</p>
-      <p><strong>Focus on AI Integration:</strong> ${counts.option3}</p>
+      <p><strong>Increase Rewards:</strong> ${counts.option3}</p>
     `;
   });
 });
