@@ -1,10 +1,19 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // ============================
-  // THEME TOGGLE
-  // ============================
-  const toggle = document.getElementById("theme-toggle");
+// script.js (replace entire file with this)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  onSnapshot,
+  serverTimestamp,
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-  // Load saved theme preference
+document.addEventListener("DOMContentLoaded", () => {
+  // THEME TOGGLE (unchanged)
+  const toggle = document.getElementById("theme-toggle");
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme === "dark") {
     document.body.classList.add("dark-mode");
@@ -12,35 +21,29 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     toggle.textContent = "🌙";
   }
-
-  // Toggle theme on click
   toggle.addEventListener("click", () => {
     const isDark = document.body.classList.toggle("dark-mode");
     toggle.textContent = isDark ? "☀️" : "🌙";
     localStorage.setItem("theme", isDark ? "dark" : "light");
   });
 
-  // ============================
-  // FIREBASE SETUP
-  // ============================
+  // FIREBASE CONFIG (make sure these match your Firebase project)
   const firebaseConfig = {
-    apiKey:  "AIzaSyBs5KhK2wLU_lSiqg_rgw0HhzKW8VMVIHk",
+    apiKey: "AIzaSyBs5KhK2wLU_lSiqg_rgw0HhzKW8VMVIHk",
     authDomain: "dd-voting.firebaseapp.com",
     projectId: "dd-voting",
   };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
 
-  // ============================
-  // DOM ELEMENTS
-  // ============================
+  // Initialize Firebase + Firestore
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // DOM elements
   const form = document.getElementById("poll-form");
   const resultsDiv = document.getElementById("results");
   const resultsDisplay = document.getElementById("results-display");
 
-  // ============================
-  // VOTE LIMIT (ONE PER USER)
-  // ============================
+  // Unique local voter id and one-vote check
   const userId =
     localStorage.getItem("voterId") ||
     (() => {
@@ -50,36 +53,35 @@ document.addEventListener("DOMContentLoaded", () => {
     })();
 
   const voted = localStorage.getItem("hasVoted");
-
   if (voted) {
     form.style.display = "none";
     resultsDiv.classList.remove("hidden");
   }
 
-  // ============================
-  // HANDLE VOTE SUBMISSION
-  // ============================
+  // Handle submission
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const choice = form.vote.value;
-    if (!choice) return alert("Please select an option!");
+    if (!choice) {
+      alert("Please select an option!");
+      return;
+    }
 
     try {
-      // Check if user already voted
-      const existingVote = await db
-        .collection("votes")
-        .where("userId", "==", userId)
-        .get();
+      // Ensure the user hasn't already voted (search votes collection)
+      const q = query(collection(db, "votes"), where("userId", "==", userId));
+      const existing = await getDocs(q);
 
-      if (!existingVote.empty) {
+      if (!existing.empty) {
         alert("You’ve already voted!");
         return;
       }
 
-      await db.collection("votes").add({
+      // Add vote
+      await addDoc(collection(db, "votes"), {
         userId,
         choice,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        timestamp: serverTimestamp(),
       });
 
       localStorage.setItem("hasVoted", "true");
@@ -87,18 +89,16 @@ document.addEventListener("DOMContentLoaded", () => {
       resultsDiv.classList.remove("hidden");
     } catch (err) {
       console.error("Error saving vote:", err);
-      alert("Error saving vote, please try again.");
+      alert("Error saving vote — check console and Firebase rules.");
     }
   });
 
-  // ============================
-  // LIVE RESULTS
-  // ============================
-  db.collection("votes").onSnapshot((snapshot) => {
+  // Live results — updates in real time
+  onSnapshot(collection(db, "votes"), (snapshot) => {
     const counts = { option1: 0, option2: 0, option3: 0 };
     snapshot.forEach((doc) => {
       const data = doc.data();
-      if (counts[data.choice] !== undefined) counts[data.choice]++;
+      if (data && counts[data.choice] !== undefined) counts[data.choice]++;
     });
 
     resultsDisplay.innerHTML = `
