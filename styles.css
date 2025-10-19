@@ -93,6 +93,61 @@ main {
   overflow-wrap: break-word;
 }
 
+/* Poll Section */
+#poll {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: var(--secondary);
+  color: var(--text-primary);
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  transition: background 0.3s, color 0.3s;
+}
+
+.poll-option {
+  margin: 0.75rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.poll-option input[type="radio"] {
+  accent-color: var(--primary);
+  transform: scale(1.2);
+}
+
+.vote-btn {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  background-color: var(--primary);
+  border: none;
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.vote-btn:hover {
+  background-color: #b38456; /* slightly darker bronze */
+}
+
+/* Results Section */
+#results {
+  margin-top: 1rem;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Dark mode support */
+body.dark #poll {
+  background: var(--tertiary);
+  color: var(--text-secondary);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.1);
+}
+
+
 
 /* ===== CONTENT GRID ===== */
 .content-grid {

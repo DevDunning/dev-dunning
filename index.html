@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>$DD Community</title>
     <link rel="stylesheet" href="styles.css" />
+    <!-- Firebase App (core SDK) -->
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"></script>
+
+<!-- Firestore -->
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"></script>
+
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto+Slab:wght@700&display=swap"
       rel="stylesheet"
@@ -40,13 +46,34 @@
       </section>
 
       <!-- GRID: POLL + NEWS -->
-      <div class="content-grid">
-        <section id="poll" class="card">
-          <h2>Community Poll</h2>
-          <p>Coming soon — you’ll be able to vote on upcoming decisions.</p>
-          <div id="results"></div>
-        </section>
+      <section id="poll" class="card">
+  <h2>Community Poll</h2>
+  <p>Vote below — you only get one vote!</p>
 
+  <form id="poll-form">
+    <div class="poll-option">
+      <input type="radio" id="option1" name="vote" value="option1" required>
+      <label for="option1">Option 1: Expand Marketing</label>
+    </div>
+
+    <div class="poll-option">
+      <input type="radio" id="option2" name="vote" value="option2">
+      <label for="option2">Option 2: Increase Burn Rate</label>
+    </div>
+
+    <div class="poll-option">
+      <input type="radio" id="option3" name="vote" value="option3">
+      <label for="option3">Option 3: Focus on AI Integration</label>
+    </div>
+
+    <button type="submit" class="vote-btn">Submit Vote</button>
+  </form>
+
+  <div id="results" class="hidden">
+    <h3>Current Results</h3>
+    <div id="results-display"></div>
+  </div>
+</section>
         <section id="news" class="card">
           <h2>Recent News</h2>
           <p class="small-muted">October 2025</p>
@@ -177,6 +204,6 @@
       <p>© 2025 $DD Community — Built with passion by Dev Dunning</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script defer src="script.js"></script>
   </body>
 </html>
