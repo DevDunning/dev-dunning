@@ -25,6 +25,14 @@ header {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+#logo {
+  max-width: 150px; /* Adjust size as needed */
+  height: auto;
+  margin-bottom: 15px;
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+}
+
 h1 {
   color: var(--accent);
   font-size: 2.5em;
