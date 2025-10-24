@@ -1,0 +1,108 @@
+:root {
+  --primary: #b88a53; /* muted gold */
+  --secondary: #e8e2d5; /* warmer cream */
+  --tertiary: #3b3834; /* deep gray-brown */
+  --text-primary: #151311; /* deeper charcoal */
+  --text-secondary: #625b53; /* reduced contrast */
+  --accent: #d3a44c; /* gold accent */
+  --background-alt: #e3dccd; /* rich ivory */
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: var(--secondary);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+}
+
+header {
+  background-color: var(--tertiary);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: var(--accent);
+  font-size: 2.5em;
+}
+
+p {
+  color: var(--text-secondary);
+  font-size: 1.1em;
+}
+
+#connectBtn, #checkBtn, button {
+  background-color: var(--primary);
+  color: var(--text-primary);
+  border: none;
+  padding: 12px 24px;
+  font-size: 1.1em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 10px;
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--accent);
+}
+
+button:disabled {
+  background-color: var(--tertiary);
+  cursor: not-allowed;
+}
+
+#walletInput {
+  padding: 12px;
+  width: 300px;
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  background-color: var(--background-alt);
+  margin: 10px;
+}
+
+#wheel-container {
+  background-color: var(--background-alt);
+  border-radius: 50%;
+  padding: 20px;
+  display: inline-block;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  margin: 20px 0;
+}
+
+#status, #result {
+  font-size: 1.2em;
+  color: var(--text-secondary);
+  margin: 20px 0;
+  padding: 10px;
+  background-color: var(--background-alt);
+  border-radius: 8px;
+  display: inline-block;
+}
+
+#winners-list {
+  margin-top: 40px;
+}
+
+#winners-list h2 {
+  color: var(--accent);
+}
+
+#winners-list ul {
+  list-style: none;
+  padding: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+#winners-list li {
+  background-color: var(--background-alt);
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: left;
+}

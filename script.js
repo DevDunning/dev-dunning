@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("theme", isDark ? "dark" : "light");
   });
 
-  // FIREBASE CONFIG (make sure these match your Firebase project)
+  // FIREBASE CONFIG 
   const firebaseConfig = {
     apiKey: "AIzaSyBs5KhK2wLU_lSiqg_rgw0HhzKW8VMVIHk",
     authDomain: "dd-voting.firebaseapp.com",
