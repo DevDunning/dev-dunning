@@ -6,7 +6,7 @@ let prizes = [];
 
 async function initWheel() {
   try {
-    const res = await fetch('/.netlify/functions/get-rewards');
+    const res = await fetch('/dd-wheel/.netlify/functions/get-rewards');
     if (!res.ok) throw new Error('Failed to load prizes');
     prizes = await res.json();
 
@@ -63,7 +63,7 @@ async function checkSpins() {
   }
 
   try {
-    const res = await fetch('/.netlify/functions/check-spins', {
+    const res = await fetch('/dd-wheel/.netlify/functions/check-spins', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ wallet })
@@ -116,7 +116,7 @@ async function handleSpinFinish() {
   const totalUsed = usedSpinsToday + (availableSpins + 1);
 
   try {
-    const res = await fetch('/.netlify/functions/spin', {
+    const res = await fetch('/dd-wheel/.netlify/functions/spin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ wallet, spinCount: totalUsed })
@@ -138,7 +138,7 @@ async function handleSpinFinish() {
 
 async function loadWinners() {
   try {
-    const res = await fetch('/.netlify/functions/winners');
+    const res = await fetch('/dd-wheel/.netlify/functions/winners');
     if (!res.ok) throw new Error(await res.text());
     const logs = await res.json();
     const ul = document.getElementById('winners');

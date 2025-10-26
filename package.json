@@ -1,0 +1,19 @@
+{
+  "name": "dd-wheel",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@solana/web3.js": "^1.98.4",
+    "@upstash/redis": "^1.35.6",
+    "dotenv": "^17.2.3",
+    "uuid": "^13.0.0"
+  }
+}
