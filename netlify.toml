@@ -1,0 +1,13 @@
+[build]
+  publish = "."  # Root directory for landing page
+  functions = "dd-wheel/netlify/functions"
+
+[[redirects]]
+  from = "/dd-wheel/*"
+  to = "/dd-wheel/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/dd-wheel/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

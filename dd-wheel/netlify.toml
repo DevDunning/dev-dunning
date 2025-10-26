@@ -1,6 +1,11 @@
 [build]
-  publish = "."
-  functions = "dd-wheel/netlify/functions"
+  publish = "src"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/dd-wheel/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
 
 [[redirects]]
   from = "/dd-wheel/*"
