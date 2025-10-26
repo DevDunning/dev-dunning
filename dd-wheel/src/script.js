@@ -32,7 +32,8 @@ async function initWheel() {
     theWheel.draw();
   } catch (error) {
     console.error('Wheel init error:', error);
-    document.getElementById('status').innerHTML = 'Error loading wheel. Try refreshing.';
+    document.getElementById('status').innerHTML = 'Error loading wheel. Try refreshing or contact support.';
+    document.getElementById('spinBtn').disabled = true; // Disable spin if wheel fails
   }
 }
 
@@ -82,7 +83,7 @@ async function checkSpins() {
       Available: ${availableSpins}
     `;
     const spinBtn = document.getElementById('spinBtn');
-    spinBtn.disabled = availableSpins <= 0;
+    spinBtn.disabled = availableSpins <= 0 || !theWheel; // Disable if no wheel
     spinBtn.textContent = `Spin the Wheel! (${availableSpins} left)`;
   } catch (error) {
     console.error('Check spins error:', error);
@@ -91,6 +92,10 @@ async function checkSpins() {
 }
 
 function spinWheel() {
+  if (!theWheel) {
+    alert('Wheel not loaded. Try refreshing or contact support.');
+    return;
+  }
   if (availableSpins <= 0) {
     alert('No spins left today! Check back tomorrow.');
     return;
@@ -108,7 +113,7 @@ function spinWheel() {
 
 async function handleSpinFinish() {
   const spinBtn = document.getElementById('spinBtn');
-  spinBtn.disabled = availableSpins <= 0;
+  spinBtn.disabled = availableSpins <= 0 || !theWheel;
 
   const wallet = walletAddress || document.getElementById('walletInput').value.trim();
   if (!wallet) return;
