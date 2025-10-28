@@ -38,20 +38,17 @@ async function initWheel() {
 }
 
 async function connectWallet() {
-  if (window.solana && window.solana.isPhantom) {
-    try {
-      const resp = await window.solana.connect();
-      walletAddress = resp.publicKey.toString();
-      document.getElementById('status').innerHTML = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
-      document.getElementById('checkBtn').disabled = false;
-      document.getElementById('walletInput').style.display = 'none';
-    } catch (err) {
-      console.error('Wallet connect failed:', err);
-      alert('Phantom connect failed. Use manual input below.');
-      document.getElementById('walletInput').style.display = 'block';
-    }
-  } else {
-    alert('Phantom wallet not found. Install it or use manual input.');
+  try {
+    const { WalletAdapter, WalletAdapterWallets } = window.SolanaWalletAdapter;
+    const adapter = new WalletAdapter(WalletAdapterWallets.all());
+    await adapter.connect();
+    walletAddress = adapter.publicKey.toString();
+    document.getElementById('status').innerHTML = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+    document.getElementById('checkBtn').disabled = false;
+    document.getElementById('walletInput').style.display = 'none';
+  } catch (err) {
+    console.error('Wallet connect failed:', err);
+    alert('Wallet connect failed. Use manual input below.');
     document.getElementById('walletInput').style.display = 'block';
   }
 }

@@ -4,9 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DevDunning ($DD) Wheel Spin Game</title>
-  <link rel="stylesheet" href="/dd-wheel/src/styles.css">
+  <link rel="stylesheet" href="/dd-wheel/styles.css">
   <script src="https://cdn.jsdelivr.net/npm/winwheel@1.3.0/Winwheel.js"></script>
   <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+  <script src="https://unpkg.com/@solana/wallet-adapter@latest/umd/wallet-adapter.js"></script>
+<script src="https://unpkg.com/@solana/wallet-adapter-wallets@latest/umd/wallet-adapter-wallets.js"></script>
 </head>
 <body>
   <header>
@@ -31,6 +33,6 @@
     <ul id="winners"></ul>
   </section>
 
-  <script src="script.js"></script>
+  <script src="/dd-wheel/script.js"></script>
 </body>
 </html>
