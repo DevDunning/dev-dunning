@@ -1,22 +1,29 @@
 import { Redis } from '@upstash/redis';
 import { Connection, PublicKey } from '@solana/web3.js';
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+const TOKEN_MINT = process.env.TOKEN_MINT;
 
+const redis = (redisUrl && redisToken) ? new Redis({ url: redisUrl, token: redisToken }) : null;
 const connection = new Connection('https://api.mainnet-beta.solana.com');
-const TOKEN_MINT = new PublicKey(process.env.TOKEN_MINT);
 
 export async function handler(event) {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
+
+  if (!TOKEN_MINT) return { statusCode: 500, body: 'TOKEN_MINT env variable missing' };
+  const tokenMint = new PublicKey(TOKEN_MINT);
+
   const { wallet } = JSON.parse(event.body);
-  if (!wallet || !wallet.match(/^[\w\-.]{32,44}$/)) return { statusCode: 400, body: 'Invalid wallet address' };
+  if (!wallet || !wallet.match(/^[\w\-.]{32,44}$/))
+    return { statusCode: 400, body: 'Invalid wallet address' };
 
   try {
-    const tokenAccounts = await connection.getParsedTokenAccountsByOwner(new PublicKey(wallet), { mint: TOKEN_MINT });
     let balance = 0;
+    const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+      new PublicKey(wallet),
+      { mint: tokenMint }
+    );
     if (tokenAccounts.value.length > 0) {
       balance = tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount || 0;
     }
@@ -28,15 +35,19 @@ export async function handler(event) {
 
     const today = new Date().toISOString().split('T')[0];
     const key = `spins:${wallet}:${today}`;
-    const usedStr = await redis.get(key);
-    const usedSpins = usedStr ? parseInt(usedStr) : 0;
+    let usedSpins = 0;
+    if (redis) {
+      const usedStr = await redis.get(key);
+      usedSpins = usedStr ? parseInt(usedStr) : 0;
+    }
+
     const available = Math.max(0, maxSpins - usedSpins);
 
     return {
       statusCode: 200,
       body: JSON.stringify({ available, maxSpins, balance, used: usedSpins })
     };
-  } catch (error) {
-    return { statusCode: 500, body: error.message };
+  } catch (err) {
+    return { statusCode: 500, body: err.message };
   }
 }
