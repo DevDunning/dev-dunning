@@ -1,13 +1,6 @@
 [build]
-  publish = "src"
-  functions = "functions"
+  functions = "dd-wheel/functions"
+  publish = "dd-wheel/src"
 
-[[redirects]]
-  from = "/dd-wheel/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/dd-wheel/*"
-  to = "/dd-wheel/:splat"
-  status = 200
+[functions]
+  node_bundler = "esbuild"
