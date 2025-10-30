@@ -1,4 +1,3 @@
-// dd-wheel/functions/winners.js
 import { Redis } from '@upstash/redis';
 
 const redis = new Redis({

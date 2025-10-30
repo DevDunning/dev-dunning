@@ -1,4 +1,3 @@
-// dd-wheel/functions/check-spins.js
 import { Redis } from '@upstash/redis';
 import { Connection, PublicKey } from '@solana/web3.js';
 
@@ -12,17 +11,11 @@ const TOKEN_MINT = new PublicKey(process.env.TOKEN_MINT);
 
 export async function handler(event) {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
-
   const { wallet } = JSON.parse(event.body);
-  if (!wallet || !wallet.match(/^[\w\-.]{32,44}$/))
-    return { statusCode: 400, body: 'Invalid wallet address' };
+  if (!wallet || !wallet.match(/^[\w\-.]{32,44}$/)) return { statusCode: 400, body: 'Invalid wallet address' };
 
   try {
-    const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
-      new PublicKey(wallet),
-      { mint: TOKEN_MINT }
-    );
-
+    const tokenAccounts = await connection.getParsedTokenAccountsByOwner(new PublicKey(wallet), { mint: TOKEN_MINT });
     let balance = 0;
     if (tokenAccounts.value.length > 0) {
       balance = tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount || 0;

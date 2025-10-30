@@ -1,4 +1,3 @@
-// dd-wheel/functions/spin.js
 import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
@@ -8,7 +7,6 @@ const redis = new Redis({
 
 export async function handler(event) {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
-
   const { wallet, spinCount } = JSON.parse(event.body);
   if (!wallet) return { statusCode: 400, body: 'Missing wallet' };
 
