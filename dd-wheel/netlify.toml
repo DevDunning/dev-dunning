@@ -1,6 +1,6 @@
 [build]
   functions = "dd-wheel/functions"
-  publish = "dd-wheel/src"
+  publish = "."
 
 [functions]
   node_bundler = "esbuild"
