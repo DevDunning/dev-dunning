@@ -1,11 +1,12 @@
-const { Redis } = require('@upstash/redis');
+// dd-wheel/functions/get-rewards.js
+import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
-exports.handler = async () => {
+export async function handler() {
   try {
     const prizesStr = await redis.get('rewards:prizes');
     const prizes = prizesStr ? JSON.parse(prizesStr) : [10000, 20000, 50000, 10000, 5000, 2500, 7500, 0];
@@ -20,4 +21,4 @@ exports.handler = async () => {
       body: JSON.stringify({ error: error.message })
     };
   }
-};
+}

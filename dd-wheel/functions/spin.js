@@ -1,12 +1,14 @@
-const { Redis } = require('@upstash/redis');
+// dd-wheel/functions/spin.js
+import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
-exports.handler = async (event) => {
+export async function handler(event) {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
+
   const { wallet, spinCount } = JSON.parse(event.body);
   if (!wallet) return { statusCode: 400, body: 'Missing wallet' };
 
@@ -35,4 +37,4 @@ exports.handler = async (event) => {
   } catch (error) {
     return { statusCode: 500, body: error.message };
   }
-};
+}

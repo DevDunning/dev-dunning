@@ -1,11 +1,12 @@
-const { Redis } = require('@upstash/redis');
+// dd-wheel/functions/winners.js
+import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
-exports.handler = async () => {
+export async function handler() {
   try {
     const today = new Date().toISOString().split('T')[0];
     const winnersKey = `winners:${today}`;
@@ -15,4 +16,4 @@ exports.handler = async () => {
   } catch (error) {
     return { statusCode: 500, body: error.message };
   }
-};
+}
