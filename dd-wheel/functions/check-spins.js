@@ -21,9 +21,9 @@ exports.handler = async (event) => {
     }
 
     let maxSpins = 0;
-    if (balance >= 1000000) maxSpins = 3;
-    else if (balance >= 500000) maxSpins = 2;
-    else if (balance >= 200000) maxSpins = 1;
+    if (balance >= 2000000) maxSpins = 3;
+    else if (balance >= 1000000) maxSpins = 2;
+    else if (balance >= 500000) maxSpins = 1;
 
     const today = new Date().toISOString().split('T')[0];
     const key = `spins:${wallet}:${today}`;

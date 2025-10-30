@@ -8,7 +8,7 @@ const redis = new Redis({
 exports.handler = async () => {
   try {
     const prizesStr = await redis.get('rewards:prizes');
-    const prizes = prizesStr ? JSON.parse(prizesStr) : [10000, 20000, 50000, 100000, 5000, 25000, 75000, 0];
+    const prizes = prizesStr ? JSON.parse(prizesStr) : [10000, 20000, 50000, 10000, 5000, 2500, 7500, 0];
     return {
       statusCode: 200,
       body: JSON.stringify(prizes)

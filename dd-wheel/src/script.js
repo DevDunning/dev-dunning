@@ -38,6 +38,10 @@ async function initWheel() {
 }
 
 async function connectWallet() {
+  if (!window.SolanaWalletAdapter) {
+    alert('Wallet adapter not loaded. Try refreshing.');
+    return;
+  }
   try {
     const { WalletAdapter, WalletAdapterWallets } = window.SolanaWalletAdapter;
     const adapter = new WalletAdapter(WalletAdapterWallets.all());

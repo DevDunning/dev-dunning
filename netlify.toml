@@ -1,6 +1,6 @@
 [build]
   publish = "."  # Root for landing page
-  functions = "dd-wheel/netlify/functions"
+  functions = "dd-wheel/functions"
 
 [[redirects]]
   from = "/dd-wheel/*"
