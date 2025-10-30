@@ -1,19 +1,23 @@
 {
   "name": "dd-wheel",
   "version": "1.0.0",
-  "description": "",
+  "description": "Solana spin wheel with secure backend functions",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "netlify dev",
+    "dev": "netlify dev",
+    "test": "echo \"No tests specified\" && exit 0"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "@solana/web3.js": "^1.98.4",
     "@upstash/redis": "^1.35.6",
-    "dotenv": "^17.2.3",
-    "uuid": "^13.0.0"
-  }
+    "dotenv": "^16.4.5",
+    "uuid": "^9.0.1",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "ISC"
 }
