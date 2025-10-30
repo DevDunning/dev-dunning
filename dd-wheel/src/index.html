@@ -4,12 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DevDunning ($DD) Wheel Spin Game</title>
+    <!-- Winwheel library -->
+    <script src="https://cdn.jsdelivr.net/npm/winwheel@1.3.0/Winwheel.min.js"></script>
 
     <!-- Styles -->
     <link rel="stylesheet" href="/dd-wheel/src/styles.css" />
-
-    <!-- Winwheel library -->
-    <script src="https://cdn.jsdelivr.net/npm/winwheel@1.3.0/Winwheel.min.js"></script>
 
     <!-- Solana web3.js for wallet detection -->
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
@@ -27,14 +26,18 @@
 
     <!-- Wallet Connection -->
     <div id="wallet-section">
-      <button id="connectBtn" onclick="connectWallet()">🔗 Connect Wallet</button>
+      <button id="connectBtn" onclick="connectWallet()">
+        🔗 Connect Wallet
+      </button>
       <input
         type="text"
         id="walletInput"
         placeholder="Or enter wallet manually"
         style="display: none"
       />
-      <button id="checkBtn" onclick="checkSpins()" disabled>Check My Spins</button>
+      <button id="checkBtn" onclick="checkSpins()" disabled>
+        Check My Spins
+      </button>
       <div id="status"></div>
     </div>
 
@@ -59,11 +62,13 @@
 
     <!-- Optional: Phantom Wallet Detect -->
     <script>
-      window.addEventListener('load', () => {
+      window.addEventListener("load", () => {
         if (window.solana && window.solana.isPhantom) {
-          console.log('✅ Phantom Wallet Detected');
+          console.log("✅ Phantom Wallet Detected");
         } else {
-          console.warn('⚠️ Phantom Wallet not detected — user will need manual entry');
+          console.warn(
+            "⚠️ Phantom Wallet not detected — user will need manual entry"
+          );
         }
       });
     </script>

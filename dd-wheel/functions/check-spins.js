@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Redis } from '@upstash/redis';
 import { Connection, PublicKey } from '@solana/web3.js';
 

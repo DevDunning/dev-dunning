@@ -7,15 +7,30 @@ const redis = (redisUrl && redisToken) ? new Redis({ url: redisUrl, token: redis
 
 export async function handler() {
   try {
-    const prizesStr = redis ? await redis.get('rewards:prizes') : null;
-    const prizes = prizesStr ? JSON.parse(prizesStr) : [10000, 20000, 50000, 10000, 5000, 2500, 7500, 0];
+    let prizesStr = await redis.get('rewards:prizes');
+    let prizes = [];
+
+    try {
+      prizes = prizesStr ? JSON.parse(prizesStr) : [];
+    } catch {
+      console.warn('Invalid JSON in Redis, using default prizes');
+      prizes = [];
+    }
+
+    if (!Array.isArray(prizes) || prizes.length === 0) {
+      prizes = [10000, 20000, 50000, 10000, 5000, 2500, 7500, 0];
+    }
 
     return {
       statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(prizes)
     };
   } catch (err) {
-    console.error('Redis error:', err);
-    return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: err.message })
+    };
   }
 }

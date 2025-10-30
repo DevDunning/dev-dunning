@@ -6,36 +6,62 @@ const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
 const redis = (redisUrl && redisToken) ? new Redis({ url: redisUrl, token: redisToken }) : null;
 
 export async function handler(event) {
-  if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
-
-  const { wallet, spinCount } = JSON.parse(event.body);
-  if (!wallet) return { statusCode: 400, body: 'Missing wallet' };
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: 'Method Not Allowed' })
+    };
+  }
 
   try {
+    const { wallet, spinCount } = JSON.parse(event.body);
+    if (!wallet) throw new Error('Missing wallet');
+
     const today = new Date().toISOString().split('T')[0];
-    const now = new Date().toISOString();
 
-    const prizesStr = redis ? await redis.get('rewards:prizes') : null;
-    const prizes = prizesStr ? JSON.parse(prizesStr) : [10000, 20000, 50000, 10000, 5000, 2500, 7500, 0];
-
+    // Fetch prizes safely
+    let prizes = [];
     if (redis) {
-      const key = `spins:${wallet}:${today}`;
-      await redis.incr(key);
+      try {
+        const prizesStr = await redis.get('rewards:prizes');
+        prizes = prizesStr ? JSON.parse(prizesStr) : [];
+      } catch {
+        prizes = [10000, 20000, 50000, 10000, 5000, 2500, 7500, 0];
+      }
+    } else {
+      prizes = [10000, 20000, 50000, 10000, 5000, 2500, 7500, 0];
     }
 
+    // Pick a random prize
     const prizeIndex = Math.floor(Math.random() * prizes.length);
     const prize = prizes[prizeIndex];
 
-    if (prize > 0 && redis) {
+    // Log winner safely
+    if (redis) {
       const winnersKey = `winners:${today}`;
-      const currentWinners = await redis.get(winnersKey) || '[]';
-      const winners = JSON.parse(currentWinners);
-      winners.push({ wallet, date: now, prize, spinCount });
-      await redis.set(winnersKey, JSON.stringify(winners));
+      let currentWinners = [];
+      try {
+        const raw = await redis.get(winnersKey);
+        currentWinners = raw ? JSON.parse(raw) : [];
+      } catch {
+        currentWinners = [];
+      }
+      currentWinners.push({ wallet, prize, spinCount, date: new Date().toISOString() });
+      await redis.set(winnersKey, JSON.stringify(currentWinners));
     }
 
-    return { statusCode: 200, body: JSON.stringify({ prize, segment: prizeIndex }) };
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prize, segment: prizeIndex })
+    };
   } catch (err) {
-    return { statusCode: 500, body: err.message };
+    console.error('Spin error:', err);
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: err.message })
+    };
   }
 }

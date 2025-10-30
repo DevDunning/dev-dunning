@@ -1,55 +1,104 @@
 // ================================
-//  $DD Wheel Game Script (Netlify-ready)
-//  - Native Phantom wallet connect
-//  - Fetches from Netlify Functions
+// $DD Wheel Game Script (Netlify-ready)
+// Canvas-based wheel with readable text
 // ================================
 
-let theWheel;
+let prizes = [];
 let availableSpins = 0;
 let usedSpinsToday = 0;
 let walletAddress = null;
-let prizes = [];
+
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+let rotation = 0;
+let spinning = false;
 
 // -------------------------------
-// Initialize Wheel
+// Fetch Prizes & Init Wheel
 // -------------------------------
 async function initWheel() {
   try {
     const res = await fetch('/.netlify/functions/get-rewards');
-    if (!res.ok) throw new Error('Failed to load prizes');
-    prizes = await res.json();
-
-    const segmentColors = [
-      '#b88a53', '#e8e2d5', '#3b3834',
-      '#d3a44c', '#e3dccd', '#625b53',
-      '#151311', '#b88a53'
-    ];
-
-    theWheel = new Winwheel({
-      canvasId: 'wheel',
-      numSegments: prizes.length,
-      outerRadius: 180,
-      innerRadius: 20,
-      textOrientation: 'curved',
-      textFontSize: 14,
-      segments: prizes.map((prize, index) => ({
-        fillStyle: segmentColors[index % segmentColors.length],
-        text: prize > 0 ? `${prize} $DD` : 'Try Again!'
-      })),
-      animation: {
-        type: 'spinToStop',
-        duration: 6,
-        spins: 10,
-        callbackFinished: handleSpinFinish
-      }
-    });
-
-    theWheel.draw();
-  } catch (error) {
-    console.error('Wheel init error:', error);
-    document.getElementById('status').innerHTML = '⚠️ Error loading wheel. Try refreshing or contact support.';
-    document.getElementById('spinBtn').disabled = true;
+    prizes = res.ok ? await res.json() : [];
+  } catch (err) {
+    console.warn('Failed to fetch prizes, using default', err);
+    prizes = [];
   }
+
+  if (!Array.isArray(prizes) || prizes.length === 0) {
+    prizes = [10000, 20000, 50000, 10000, 5000, 2500, 7500, 0];
+    console.warn('Using default prizes:', prizes);
+  }
+
+  drawWheel();
+}
+
+// -------------------------------
+// Draw Wheel on Canvas
+// -------------------------------
+function drawWheel() {
+  const radius = canvas.width / 2;
+  const segmentColors = [
+    '#b88a53', '#e8e2d5', '#3b3834',
+    '#d3a44c', '#e3dccd', '#625b53',
+    '#151311', '#b88a53'
+  ];
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  prizes.forEach((prize, i) => {
+    const startAngle = (i * 2 * Math.PI) / prizes.length + rotation;
+    const endAngle = ((i + 1) * 2 * Math.PI) / prizes.length + rotation;
+
+    // Draw segment
+    ctx.beginPath();
+    ctx.moveTo(radius, radius);
+    ctx.arc(radius, radius, radius - 10, startAngle, endAngle);
+    ctx.fillStyle = segmentColors[i % segmentColors.length];
+    ctx.fill();
+    ctx.closePath();
+
+    // Draw text
+    ctx.save();
+    ctx.translate(radius, radius);
+    ctx.rotate((startAngle + endAngle) / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#000'; // Black text for readability
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillText(prize > 0 ? `${prize} $DD` : 'Try Again!', radius - 20, 0);
+    ctx.restore();
+  });
+
+  // Draw pointer
+  ctx.beginPath();
+  ctx.moveTo(radius, 10);
+  ctx.lineTo(radius - 10, 30);
+  ctx.lineTo(radius + 10, 30);
+  ctx.fillStyle = '#ff0000';
+  ctx.fill();
+  ctx.closePath();
+}
+
+// -------------------------------
+// Spin Animation
+// -------------------------------
+function spinAnimation(callback) {
+  if (spinning) return;
+  spinning = true;
+  let speed = Math.random() * 0.3 + 0.3;
+  const deceleration = 0.995;
+
+  function animate() {
+    rotation += speed;
+    speed *= deceleration;
+    drawWheel();
+    if (speed > 0.002) requestAnimationFrame(animate);
+    else {
+      spinning = false;
+      callback();
+    }
+  }
+  animate();
 }
 
 // -------------------------------
@@ -57,35 +106,31 @@ async function initWheel() {
 // -------------------------------
 async function connectWallet() {
   if (!window.solana || !window.solana.isPhantom) {
-    alert('Phantom Wallet not detected. Please install Phantom extension.');
+    alert('Phantom Wallet not detected. Enter manually.');
+    document.getElementById('walletInput').style.display = 'block';
     return;
   }
 
   try {
     const resp = await window.solana.connect();
     walletAddress = resp.publicKey.toString();
-
     document.getElementById('status').innerHTML =
       `✅ Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
-
-    document.getElementById('checkBtn').disabled = false;
     document.getElementById('walletInput').style.display = 'none';
+    document.getElementById('checkBtn').disabled = false;
   } catch (err) {
     console.error('Wallet connect failed:', err);
-    alert('Wallet connect failed or was rejected. You can enter your address manually below.');
+    alert('Wallet connect failed. Enter manually.');
     document.getElementById('walletInput').style.display = 'block';
   }
 }
 
 // -------------------------------
-// Check Available Spins
+// Check Spins
 // -------------------------------
 async function checkSpins() {
   const wallet = walletAddress || document.getElementById('walletInput').value.trim();
-  if (!wallet) {
-    alert('Please connect wallet or enter address!');
-    return;
-  }
+  if (!wallet) return alert('Connect wallet or enter manually!');
 
   try {
     const res = await fetch('/.netlify/functions/check-spins', {
@@ -95,8 +140,8 @@ async function checkSpins() {
     });
 
     if (!res.ok) throw new Error(await res.text());
-
     const data = await res.json();
+
     availableSpins = data.available;
     usedSpinsToday = data.used;
 
@@ -108,11 +153,11 @@ async function checkSpins() {
     `;
 
     const spinBtn = document.getElementById('spinBtn');
-    spinBtn.disabled = availableSpins <= 0 || !theWheel;
+    spinBtn.disabled = availableSpins <= 0;
     spinBtn.textContent = `Spin the Wheel! (${availableSpins} left)`;
-  } catch (error) {
-    console.error('Check spins error:', error);
-    alert('Error checking spins: ' + error.message);
+  } catch (err) {
+    console.error('Check spins error:', err);
+    alert('Error checking spins: ' + err.message);
   }
 }
 
@@ -120,14 +165,7 @@ async function checkSpins() {
 // Spin Wheel
 // -------------------------------
 function spinWheel() {
-  if (!theWheel) {
-    alert('Wheel not loaded. Try refreshing or contact support.');
-    return;
-  }
-  if (availableSpins <= 0) {
-    alert('No spins left today! Check back tomorrow.');
-    return;
-  }
+  if (availableSpins <= 0) return alert('No spins left today!');
 
   availableSpins--;
   const spinBtn = document.getElementById('spinBtn');
@@ -135,22 +173,17 @@ function spinWheel() {
   spinBtn.disabled = true;
   document.getElementById('result').innerHTML = '🎡 Spinning...';
 
-  theWheel.rotationAngle = 0;
-  theWheel.draw();
-  theWheel.startAnimation();
+  spinAnimation(handleSpinFinish);
 }
 
 // -------------------------------
-// Handle Spin Result
+// Handle Spin Result & Log
 // -------------------------------
 async function handleSpinFinish() {
-  const spinBtn = document.getElementById('spinBtn');
-  spinBtn.disabled = availableSpins <= 0 || !theWheel;
-
   const wallet = walletAddress || document.getElementById('walletInput').value.trim();
   if (!wallet) return;
 
-  const totalUsed = usedSpinsToday + (availableSpins + 1);
+  const totalUsed = usedSpinsToday + 1;
 
   try {
     const res = await fetch('/.netlify/functions/spin', {
@@ -168,8 +201,12 @@ async function handleSpinFinish() {
         : '😔 Try again tomorrow—better luck next spin!';
 
     loadWinners();
-  } catch (error) {
-    console.error('Spin log error:', error);
+
+    const spinBtn = document.getElementById('spinBtn');
+    spinBtn.disabled = availableSpins <= 0;
+    spinBtn.textContent = `Spin the Wheel! (${availableSpins} left)`;
+  } catch (err) {
+    console.error('Spin log error:', err);
     document.getElementById('result').innerHTML =
       '⚠️ Spin complete, but log failed. Contact support.';
   }
@@ -188,28 +225,18 @@ async function loadWinners() {
     ul.innerHTML = '';
     logs.slice(0, 10).reverse().forEach(log => {
       const li = document.createElement('li');
-      li.innerHTML = `
-        <strong>${log.wallet.slice(0, 6)}...${log.wallet.slice(-4)}</strong>
-        won ${log.prize} $DD on
-        ${new Date(log.date).toLocaleDateString()}
-      `;
+      li.innerHTML = `<strong>${log.wallet.slice(0, 6)}...${log.wallet.slice(-4)}</strong> won ${log.prize} $DD on ${new Date(log.date).toLocaleDateString()}`;
       ul.appendChild(li);
     });
-  } catch (error) {
-    console.error('Load winners error:', error);
+  } catch (err) {
+    console.error('Load winners error:', err);
   }
 }
 
 // -------------------------------
 // On Page Load
 // -------------------------------
-window.addEventListener('load', async () => {
+window.addEventListener('DOMContentLoaded', async () => {
   await initWheel();
   loadWinners();
-
-  if (window.solana && window.solana.isPhantom) {
-    console.log('Phantom wallet detected');
-  } else {
-    console.warn('Phantom wallet not detected');
-  }
 });
