@@ -1,7 +1,7 @@
 // ================================
-//  $DD Wheel Game Script (Fixed)
+//  $DD Wheel Game Script (Netlify-ready)
 //  - Native Phantom wallet connect
-//  - Works in Netlify functions
+//  - Fetches from Netlify Functions
 // ================================
 
 let theWheel;
@@ -15,7 +15,7 @@ let prizes = [];
 // -------------------------------
 async function initWheel() {
   try {
-    const res = await fetch('/dd-wheel/functions/get-rewards');
+    const res = await fetch('/.netlify/functions/get-rewards');
     if (!res.ok) throw new Error('Failed to load prizes');
     prizes = await res.json();
 
@@ -56,7 +56,6 @@ async function initWheel() {
 // Connect Phantom Wallet
 // -------------------------------
 async function connectWallet() {
-  // Detect Phantom
   if (!window.solana || !window.solana.isPhantom) {
     alert('Phantom Wallet not detected. Please install Phantom extension.');
     return;
@@ -89,7 +88,7 @@ async function checkSpins() {
   }
 
   try {
-    const res = await fetch('/dd-wheel/functions/check-spins', {
+    const res = await fetch('/.netlify/functions/check-spins', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ wallet })
@@ -154,7 +153,7 @@ async function handleSpinFinish() {
   const totalUsed = usedSpinsToday + (availableSpins + 1);
 
   try {
-    const res = await fetch('/dd-wheel/functions/spin', {
+    const res = await fetch('/.netlify/functions/spin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ wallet, spinCount: totalUsed })
@@ -163,13 +162,10 @@ async function handleSpinFinish() {
     if (!res.ok) throw new Error(await res.text());
     const { prize } = await res.json();
 
-    if (prize > 0) {
-      document.getElementById('result').innerHTML =
-        `🎉 You won ${prize} $DD! Logged for manual payout.`;
-    } else {
-      document.getElementById('result').innerHTML =
-        '😔 Try again tomorrow—better luck next spin!';
-    }
+    document.getElementById('result').innerHTML =
+      prize > 0
+        ? `🎉 You won ${prize} $DD! Logged for manual payout.`
+        : '😔 Try again tomorrow—better luck next spin!';
 
     loadWinners();
   } catch (error) {
@@ -184,7 +180,7 @@ async function handleSpinFinish() {
 // -------------------------------
 async function loadWinners() {
   try {
-    const res = await fetch('/dd-wheel/functions/winners');
+    const res = await fetch('/.netlify/functions/winners');
     if (!res.ok) throw new Error(await res.text());
     const logs = await res.json();
 
@@ -211,7 +207,6 @@ window.addEventListener('load', async () => {
   await initWheel();
   loadWinners();
 
-  // Auto-detect Phantom wallet on load
   if (window.solana && window.solana.isPhantom) {
     console.log('Phantom wallet detected');
   } else {
