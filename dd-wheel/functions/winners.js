@@ -1,19 +1,27 @@
 import 'dotenv/config';
 import { Redis } from '@upstash/redis';
 
-const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
-const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
-const redis = (redisUrl && redisToken) ? new Redis({ url: redisUrl, token: redisToken }) : null;
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN
+});
 
 export async function handler() {
   try {
-    const today = new Date().toISOString().split('T')[0];
-    const winnersKey = `winners:${today}`;
-    const winnersStr = redis ? await redis.get(winnersKey) : '[]';
-    const logs = JSON.parse(winnersStr || '[]');
+    const recentKey = 'daily:winners:recent';
+    const recentStr = await redis.get(recentKey);
+    const recent = recentStr ? JSON.parse(recentStr) : [];
 
-    return { statusCode: 200, body: JSON.stringify(logs) };
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(recent)
+    };
   } catch (err) {
-    return { statusCode: 500, body: err.message };
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: err.message })
+    };
   }
 }

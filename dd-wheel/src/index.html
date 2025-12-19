@@ -1,79 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DevDunning ($DD) Wheel Spin Game</title>
-    <!-- Winwheel library -->
-    <script src="https://cdn.jsdelivr.net/npm/winwheel@1.3.0/Winwheel.min.js"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevDunning Daily Top Holder Draw</title>
+  <script src="https://cdn.jsdelivr.net/npm/winwheel@1.3.0/Winwheel.min.js"></script>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header>
+    <img src="/DD.png" alt="DevDunning Logo" id="logo" />
+    <h1>Daily Top Holder Draw</h1>
+    <p>Top 10 $DD holders compete daily. One winner is selected automatically every 24 hours.</p>
+  </header>
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="/dd-wheel/src/styles.css" />
+  <!-- Countdown Timer -->
+  <div id="timer">
+    Next draw in: <span id="countdown">Loading...</span>
+  </div>
 
-    <!-- Solana web3.js for wallet detection -->
-    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-  </head>
+  <!-- Wheel -->
+  <div id="wheel-container">
+    <canvas id="wheel" width="400" height="400"></canvas>
+  </div>
 
-  <body>
-    <header>
-      <img src="/DD.png" alt="DevDunning ($DD) Logo" id="logo" />
-      <h1>DevDunning ($DD) Daily Wheel Spin</h1>
-      <p>
-        Hold $DD to unlock spins: 500k+ = 1/day, 1m+ = 2/day, 2m+ = 3/day.
-        Prizes in $DD, paid manually!
-      </p>
-    </header>
+  <!-- Winner Display -->
+  <div id="winner-section">
+    <h2>Today's Winner</h2>
+    <div id="winner">Loading...</div>
+  </div>
 
-    <!-- Wallet Connection -->
-    <div id="wallet-section">
-      <button id="connectBtn" onclick="connectWallet()">
-        🔗 Connect Wallet
-      </button>
-      <input
-        type="text"
-        id="walletInput"
-        placeholder="Or enter wallet manually"
-        style="display: none"
-      />
-      <button id="checkBtn" onclick="checkSpins()" disabled>
-        Check My Spins
-      </button>
-      <div id="status"></div>
-    </div>
+  <!-- Recent Winners -->
+  <section id="winners-list">
+    <h2>Recent Winners</h2>
+    <ul id="winners"></ul>
+  </section>
 
-    <!-- Wheel Canvas -->
-    <div id="wheel-container">
-      <canvas id="wheel" width="400" height="400"></canvas>
-    </div>
-
-    <!-- Spin Button + Result -->
-    <div id="spin-section">
-      <button id="spinBtn" onclick="spinWheel()" disabled>
-        Spin the Wheel! (0 left)
-      </button>
-      <div id="result"></div>
-    </div>
-
-    <!-- Recent Winners -->
-    <section id="winners-list">
-      <h2>🏆 Recent $DD Winners</h2>
-      <ul id="winners"></ul>
-    </section>
-
-    <!-- Optional: Phantom Wallet Detect -->
-    <script>
-      window.addEventListener("load", () => {
-        if (window.solana && window.solana.isPhantom) {
-          console.log("✅ Phantom Wallet Detected");
-        } else {
-          console.warn(
-            "⚠️ Phantom Wallet not detected — user will need manual entry"
-          );
-        }
-      });
-    </script>
-
-    <!-- Game Logic -->
-    <script src="/dd-wheel/src/script.js"></script>
-  </body>
+  <script src="./script.js"></script>
+</body>
 </html>

@@ -1,221 +1,31 @@
-// ================================
-// $DD Wheel Game Script (Netlify-ready)
-// Canvas-based wheel with readable text
-// ================================
-
-let prizes = [];
-let availableSpins = 0;
-let usedSpinsToday = 0;
-let walletAddress = null;
+let topHolders = [];
+let winnerWallet = null;
+let rotation = 0;
 
 const canvas = document.getElementById('wheel');
 const ctx = canvas.getContext('2d');
-let rotation = 0;
-let spinning = false;
+const radius = canvas.width / 2;
 
 // -------------------------------
-// Fetch Prizes & Init Wheel
+// Fetch Daily Winner + Top 10 Snapshot
 // -------------------------------
-async function initWheel() {
+async function fetchDailyData() {
   try {
-    const res = await fetch('/.netlify/functions/get-rewards');
-    prizes = res.ok ? await res.json() : [];
-  } catch (err) {
-    console.warn('Failed to fetch prizes, using default', err);
-    prizes = [];
-  }
-
-  if (!Array.isArray(prizes) || prizes.length === 0) {
-    prizes = [10000, 20000, 50000, 10000, 5000, 2500, 7500, 0];
-    console.warn('Using default prizes:', prizes);
-  }
-
-  drawWheel();
-}
-
-// -------------------------------
-// Draw Wheel on Canvas
-// -------------------------------
-function drawWheel() {
-  const radius = canvas.width / 2;
-  const segmentColors = [
-    '#b88a53', '#e8e2d5', '#3b3834',
-    '#d3a44c', '#e3dccd', '#625b53',
-    '#151311', '#b88a53'
-  ];
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  prizes.forEach((prize, i) => {
-    const startAngle = (i * 2 * Math.PI) / prizes.length + rotation;
-    const endAngle = ((i + 1) * 2 * Math.PI) / prizes.length + rotation;
-
-    // Draw segment
-    ctx.beginPath();
-    ctx.moveTo(radius, radius);
-    ctx.arc(radius, radius, radius - 10, startAngle, endAngle);
-    ctx.fillStyle = segmentColors[i % segmentColors.length];
-    ctx.fill();
-    ctx.closePath();
-
-    // Draw text
-    ctx.save();
-    ctx.translate(radius, radius);
-    ctx.rotate((startAngle + endAngle) / 2);
-    ctx.textAlign = 'right';
-    ctx.fillStyle = '#000'; // Black text for readability
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillText(prize > 0 ? `${prize} $DD` : 'Try Again!', radius - 20, 0);
-    ctx.restore();
-  });
-
-  // Draw pointer
-  ctx.beginPath();
-  ctx.moveTo(radius, 10);
-  ctx.lineTo(radius - 10, 30);
-  ctx.lineTo(radius + 10, 30);
-  ctx.fillStyle = '#ff0000';
-  ctx.fill();
-  ctx.closePath();
-}
-
-// -------------------------------
-// Spin Animation
-// -------------------------------
-function spinAnimation(callback) {
-  if (spinning) return;
-  spinning = true;
-  let speed = Math.random() * 0.3 + 0.3;
-  const deceleration = 0.995;
-
-  function animate() {
-    rotation += speed;
-    speed *= deceleration;
-    drawWheel();
-    if (speed > 0.002) requestAnimationFrame(animate);
-    else {
-      spinning = false;
-      callback();
+    const res = await fetch('/.netlify/functions/daily-spin');
+    const data = res.ok ? await res.json() : null;
+    if (data) {
+      topHolders = data.snapshot;
+      winnerWallet = data.wallet;
     }
-  }
-  animate();
-}
-
-// -------------------------------
-// Connect Phantom Wallet
-// -------------------------------
-async function connectWallet() {
-  if (!window.solana || !window.solana.isPhantom) {
-    alert('Phantom Wallet not detected. Enter manually.');
-    document.getElementById('walletInput').style.display = 'block';
-    return;
-  }
-
-  try {
-    const resp = await window.solana.connect();
-    walletAddress = resp.publicKey.toString();
-    document.getElementById('status').innerHTML =
-      `✅ Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
-    document.getElementById('walletInput').style.display = 'none';
-    document.getElementById('checkBtn').disabled = false;
   } catch (err) {
-    console.error('Wallet connect failed:', err);
-    alert('Wallet connect failed. Enter manually.');
-    document.getElementById('walletInput').style.display = 'block';
+    console.error('Error fetching daily spin:', err);
   }
 }
 
 // -------------------------------
-// Check Spins
+// Fetch Recent Winners
 // -------------------------------
-async function checkSpins() {
-  const wallet = walletAddress || document.getElementById('walletInput').value.trim();
-  if (!wallet) return alert('Connect wallet or enter manually!');
-
-  try {
-    const res = await fetch('/.netlify/functions/check-spins', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ wallet })
-    });
-
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-
-    availableSpins = data.available;
-    usedSpinsToday = data.used;
-
-    document.getElementById('status').innerHTML = `
-      💰 Balance: ${data.balance.toLocaleString()} $DD | 
-      🎯 Max spins: ${data.maxSpins} | 
-      🔄 Used today: ${data.used} | 
-      🌀 Available: ${availableSpins}
-    `;
-
-    const spinBtn = document.getElementById('spinBtn');
-    spinBtn.disabled = availableSpins <= 0;
-    spinBtn.textContent = `Spin the Wheel! (${availableSpins} left)`;
-  } catch (err) {
-    console.error('Check spins error:', err);
-    alert('Error checking spins: ' + err.message);
-  }
-}
-
-// -------------------------------
-// Spin Wheel
-// -------------------------------
-function spinWheel() {
-  if (availableSpins <= 0) return alert('No spins left today!');
-
-  availableSpins--;
-  const spinBtn = document.getElementById('spinBtn');
-  spinBtn.textContent = `Spin the Wheel! (${availableSpins} left)`;
-  spinBtn.disabled = true;
-  document.getElementById('result').innerHTML = '🎡 Spinning...';
-
-  spinAnimation(handleSpinFinish);
-}
-
-// -------------------------------
-// Handle Spin Result & Log
-// -------------------------------
-async function handleSpinFinish() {
-  const wallet = walletAddress || document.getElementById('walletInput').value.trim();
-  if (!wallet) return;
-
-  const totalUsed = usedSpinsToday + 1;
-
-  try {
-    const res = await fetch('/.netlify/functions/spin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ wallet, spinCount: totalUsed })
-    });
-
-    if (!res.ok) throw new Error(await res.text());
-    const { prize } = await res.json();
-
-    document.getElementById('result').innerHTML =
-      prize > 0
-        ? `🎉 You won ${prize} $DD! Logged for manual payout.`
-        : '😔 Try again tomorrow—better luck next spin!';
-
-    loadWinners();
-
-    const spinBtn = document.getElementById('spinBtn');
-    spinBtn.disabled = availableSpins <= 0;
-    spinBtn.textContent = `Spin the Wheel! (${availableSpins} left)`;
-  } catch (err) {
-    console.error('Spin log error:', err);
-    document.getElementById('result').innerHTML =
-      '⚠️ Spin complete, but log failed. Contact support.';
-  }
-}
-
-// -------------------------------
-// Load Recent Winners
-// -------------------------------
-async function loadWinners() {
+async function loadRecentWinners() {
   try {
     const res = await fetch('/.netlify/functions/winners');
     if (!res.ok) throw new Error(await res.text());
@@ -225,18 +35,114 @@ async function loadWinners() {
     ul.innerHTML = '';
     logs.slice(0, 10).reverse().forEach(log => {
       const li = document.createElement('li');
-      li.innerHTML = `<strong>${log.wallet.slice(0, 6)}...${log.wallet.slice(-4)}</strong> won ${log.prize} $DD on ${new Date(log.date).toLocaleDateString()}`;
+      li.textContent = `${log.wallet.slice(0,6)}...${log.wallet.slice(-4)} won ${log.prize} $DD on ${new Date(log.date).toLocaleDateString()}`;
       ul.appendChild(li);
     });
   } catch (err) {
-    console.error('Load winners error:', err);
+    console.error('Load recent winners error:', err);
   }
+}
+
+// -------------------------------
+// Draw Wheel
+// -------------------------------
+function drawWheel() {
+  const colors = ['#b88a53','#e8e2d5','#3b3834','#d3a44c','#e3dccd','#625b53','#151311','#b88a53','#e8e2d5','#3b3834'];
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  topHolders.forEach((wallet,i)=>{
+    const startAngle = (i*2*Math.PI)/topHolders.length + rotation;
+    const endAngle = ((i+1)*2*Math.PI)/topHolders.length + rotation;
+
+    ctx.beginPath();
+    ctx.moveTo(radius,radius);
+    ctx.arc(radius,radius,radius-10,startAngle,endAngle);
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+    ctx.closePath();
+
+    ctx.save();
+    ctx.translate(radius,radius);
+    ctx.rotate((startAngle+endAngle)/2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.fillText(wallet.slice(0,6)+'...', radius-20, 0);
+    ctx.restore();
+  });
+
+  // Draw pointer
+  ctx.beginPath();
+  ctx.moveTo(radius,10);
+  ctx.lineTo(radius-10,30);
+  ctx.lineTo(radius+10,30);
+  ctx.fillStyle = '#ff0000';
+  ctx.fill();
+  ctx.closePath();
+}
+
+// -------------------------------
+// Spin Wheel to Winner
+// -------------------------------
+function spinToWinner() {
+  if (!winnerWallet || topHolders.length===0) return;
+
+  const targetIndex = topHolders.indexOf(winnerWallet);
+  if (targetIndex === -1) return;
+
+  let currentRotation = 0;
+  let speed = 0.2;
+  const deceleration = 0.97;
+  const segmentAngle = (2*Math.PI)/topHolders.length;
+  const targetRotation = (Math.PI*3/2) - targetIndex*segmentAngle;
+
+  function animate() {
+    currentRotation += speed;
+    speed *= deceleration;
+    rotation = currentRotation;
+    drawWheel();
+    if(speed>0.002){
+      requestAnimationFrame(animate);
+    } else {
+      rotation = targetRotation;
+      drawWheel();
+      document.getElementById('winner').textContent = winnerWallet;
+    }
+  }
+  animate();
+}
+
+// -------------------------------
+// Countdown Timer
+// -------------------------------
+function startTimer() {
+  const countdownEl = document.getElementById('countdown');
+  const nextSpin = new Date();
+  nextSpin.setUTCHours(24,0,0,0);
+
+  function updateTimer() {
+    const now = new Date();
+    const diff = nextSpin - now;
+    if(diff<=0){
+      countdownEl.textContent='Spinning soon...';
+    } else {
+      const h = Math.floor(diff/1000/60/60);
+      const m = Math.floor((diff/1000/60)%60);
+      const s = Math.floor((diff/1000)%60);
+      countdownEl.textContent = `${h}h ${m}m ${s}s`;
+    }
+    requestAnimationFrame(updateTimer);
+  }
+  updateTimer();
 }
 
 // -------------------------------
 // On Page Load
 // -------------------------------
-window.addEventListener('DOMContentLoaded', async () => {
-  await initWheel();
-  loadWinners();
+window.addEventListener('DOMContentLoaded', async()=>{
+  await fetchDailyData();
+  drawWheel();
+  spinToWinner();
+  loadRecentWinners();
+  startTimer();
 });

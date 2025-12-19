@@ -1,6 +1,8 @@
 [build]
-  functions = "dd-wheel/functions"
   publish = "."
+  functions = "dd-wheel/functions"
 
-[functions]
-  node_bundler = "esbuild"
+[[scheduled]]
+
+function = "daily-spin"
+schedule = "0 17 * * *"
