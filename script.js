@@ -1,4 +1,3 @@
-// script.js (replace entire file with this)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import {
   getFirestore,
@@ -12,7 +11,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  // THEME TOGGLE (unchanged)
+  // THEME TOGGLE 
   const toggle = document.getElementById("theme-toggle");
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme === "dark") {
