@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DevDunning Daily Top Holder Draw</title>
-  <script src="Winwheel (1).js"></script>
   <link rel="stylesheet" href="./styles.css" />
+  <script src="script.js" defer></script>
 </head>
 <body>
   <header>
@@ -19,15 +19,16 @@
     Next draw in: <span id="countdown">Loading...</span>
   </div>
 
-  <!-- Wheel -->
-  <div id="wheel-container">
-    <canvas id="wheel" width="400" height="400"></canvas>
-  </div>
+  <!-- Top 10 Holder Leaderboard -->
+  <section id="top-holders">
+    <h2>Top 10 Holders</h2>
+    <ul id="holder-list"></ul>
+  </section>
 
   <!-- Winner Display -->
   <div id="winner-section">
     <h2>Today's Winner</h2>
-    <div id="winner">Loading...</div>
+    <div id="winner">Not selected yet</div>
   </div>
 
   <!-- Recent Winners -->
@@ -35,7 +36,10 @@
     <h2>Recent Winners</h2>
     <ul id="winners"></ul>
   </section>
+<<<<<<< HEAD
 
   <script src="./script.js" defer></script>
+=======
+>>>>>>> 608bded (update to the ui and game)
 </body>
 </html>

@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  functions = "functions"
+  functions = "dd-wheel/netlify/functions"
 
 [[redirects]]
   from = "/api/*"

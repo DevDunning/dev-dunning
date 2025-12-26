@@ -1,24 +1,50 @@
+// -------------------------------
+// Global Variables
+// -------------------------------
 let topHolders = [];
 let winnerWallet = null;
-let rotation = 0;
-
-const canvas = document.getElementById('wheel');
-const ctx = canvas.getContext('2d');
-const radius = canvas.width / 2;
 
 // -------------------------------
-// Fetch Daily Winner + Top 10 Snapshot
+// Fetch Daily Winner + Top 10
 // -------------------------------
 async function fetchDailyData() {
   try {
     const res = await fetch('/.netlify/functions/daily-spin');
-    const data = res.ok ? await res.json() : null;
-    if (data) {
-      topHolders = data.snapshot;
-      winnerWallet = data.wallet;
-    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    topHolders = data.topHolders || [];
+    winnerWallet = data.wallet || null;
+
+    renderTopHolders();
+    renderWinner();
   } catch (err) {
     console.error('Error fetching daily spin:', err);
+  }
+}
+
+// -------------------------------
+// Render Top 10 Holders
+// -------------------------------
+function renderTopHolders() {
+  const ul = document.getElementById('holder-list');
+  ul.innerHTML = '';
+  topHolders.forEach((wallet, i) => {
+    const li = document.createElement('li');
+    li.textContent = `${i + 1}. ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
+    ul.appendChild(li);
+  });
+}
+
+// -------------------------------
+// Render Winner if Drawn
+// -------------------------------
+function renderWinner() {
+  const winnerEl = document.getElementById('winner');
+  if (winnerWallet) {
+    winnerEl.textContent = winnerWallet;
+  } else {
+    winnerEl.textContent = 'Not selected yet';
   }
 }
 
@@ -44,105 +70,47 @@ async function loadRecentWinners() {
 }
 
 // -------------------------------
-// Draw Wheel
-// -------------------------------
-function drawWheel() {
-  const colors = ['#b88a53','#e8e2d5','#3b3834','#d3a44c','#e3dccd','#625b53','#151311','#b88a53','#e8e2d5','#3b3834'];
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  topHolders.forEach((wallet,i)=>{
-    const startAngle = (i*2*Math.PI)/topHolders.length + rotation;
-    const endAngle = ((i+1)*2*Math.PI)/topHolders.length + rotation;
-
-    ctx.beginPath();
-    ctx.moveTo(radius,radius);
-    ctx.arc(radius,radius,radius-10,startAngle,endAngle);
-    ctx.fillStyle = colors[i % colors.length];
-    ctx.fill();
-    ctx.closePath();
-
-    ctx.save();
-    ctx.translate(radius,radius);
-    ctx.rotate((startAngle+endAngle)/2);
-    ctx.textAlign = 'right';
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillText(wallet.slice(0,6)+'...', radius-20, 0);
-    ctx.restore();
-  });
-
-  // Draw pointer
-  ctx.beginPath();
-  ctx.moveTo(radius,10);
-  ctx.lineTo(radius-10,30);
-  ctx.lineTo(radius+10,30);
-  ctx.fillStyle = '#ff0000';
-  ctx.fill();
-  ctx.closePath();
-}
-
-// -------------------------------
-// Spin Wheel to Winner
-// -------------------------------
-function spinToWinner() {
-  if (!winnerWallet || topHolders.length===0) return;
-
-  const targetIndex = topHolders.indexOf(winnerWallet);
-  if (targetIndex === -1) return;
-
-  let currentRotation = 0;
-  let speed = 0.2;
-  const deceleration = 0.97;
-  const segmentAngle = (2*Math.PI)/topHolders.length;
-  const targetRotation = (Math.PI*3/2) - targetIndex*segmentAngle;
-
-  function animate() {
-    currentRotation += speed;
-    speed *= deceleration;
-    rotation = currentRotation;
-    drawWheel();
-    if(speed>0.002){
-      requestAnimationFrame(animate);
-    } else {
-      rotation = targetRotation;
-      drawWheel();
-      document.getElementById('winner').textContent = winnerWallet;
-    }
-  }
-  animate();
-}
-
-// -------------------------------
 // Countdown Timer
 // -------------------------------
 function startTimer() {
   const countdownEl = document.getElementById('countdown');
   const nextSpin = new Date();
-  nextSpin.setUTCHours(24,0,0,0);
+  nextSpin.setUTCHours(17,0,0,0); // daily at 17:00 UTC
+  if(nextSpin < new Date()) nextSpin.setUTCDate(nextSpin.getUTCDate() + 1);
 
   function updateTimer() {
     const now = new Date();
     const diff = nextSpin - now;
-    if(diff<=0){
-      countdownEl.textContent='Spinning soon...';
+
+    if(diff <= 0){
+      countdownEl.textContent = 'Drawing now...';
     } else {
       const h = Math.floor(diff/1000/60/60);
       const m = Math.floor((diff/1000/60)%60);
       const s = Math.floor((diff/1000)%60);
       countdownEl.textContent = `${h}h ${m}m ${s}s`;
     }
+
     requestAnimationFrame(updateTimer);
   }
+
   updateTimer();
 }
 
 // -------------------------------
-// On Page Load
+// Auto-refresh top holders every 30s
 // -------------------------------
-window.addEventListener('DOMContentLoaded', async()=>{
+function autoRefreshTopHolders() {
+  fetchDailyData();
+  setInterval(fetchDailyData, 30000); // refresh every 30 seconds
+}
+
+// -------------------------------
+// Initialize
+// -------------------------------
+window.addEventListener('DOMContentLoaded', async () => {
   await fetchDailyData();
-  drawWheel();
-  spinToWinner();
-  loadRecentWinners();
+  await loadRecentWinners();
   startTimer();
+  autoRefreshTopHolders();
 });
